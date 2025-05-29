@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Lesson: Algorithms, Computability & Turing Machines</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>🎓 Algorithms & Computability: Mastering Turing Machines</h1>
+        <p>Interactive Learning Experience - Lecture 1/13</p>
+    </div>
+
+    <div class="progress-container">
+        <span>Learning Progress:</span>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <span id="progressText">0%</span>
+    </div>
+
+    <div class="lesson-container">
+        <nav class="sidebar">
+            <h3>📚 Learning Path</h3>
+            <ul>
+                <li><a href="#" onclick="showSection('introduction')" data-section="introduction">1. Course Introduction</a></li>
+                <li><a href="#" onclick="showSection('formal-languages')" data-section="formal-languages">2. Formal Languages</a></li>
+                <li><a href="#" onclick="showSection('language-operations')" data-section="language-operations">3. Language Operations</a></li>
+                <li><a href="#" onclick="showSection('turing-machines')" data-section="turing-machines">4. Turing Machines</a></li>
+                <li><a href="#" onclick="showSection('dtm-operation')" data-section="dtm-operation">5. DTM Operation</a></li>
+                <li><a href="#" onclick="showSection('language-classes')" data-section="language-classes">6. Language Classes</a></li>
+                <li><a href="#" onclick="showSection('interactive-tm')" data-section="interactive-tm">7. Interactive TM</a></li>
+                <li><a href="#" onclick="showSection('self-test')" data-section="self-test">8. Self-Assessment</a></li>
+                <li><a href="#" onclick="showSection('exam-prep')" data-section="exam-prep">9. Exam Preparation</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <!-- Introduction Section -->
+            <section id="introduction" class="section active">
+                <h1>🚀 Course Introduction: What Can Algorithms Solve?</h1>
+
+                <div class="concept-card">
+                    <h2>🎯 Core Questions We'll Answer</h2>
+                    <p>This course explores the fundamental limits of computation. We'll discover what problems can be solved algorithmically, how efficiently they can be solved, and what "algorithm" even means formally.</p>
+                </div>
+
+                <div class="step-by-step">
+                    <div class="step">
+                        <h3>Primality Testing Challenge</h3>
+                        <p>Consider testing if a number is prime. The naive approach checks all divisors up to √n, giving us O(√n) time complexity.</p>
+                        <div class="example-box">
+                            <strong>Real-world impact:</strong> For a 256-bit number (used in cryptography), this would take approximately 1.5 × 10²² years at 1 billion operations per second!
+                        </div>
+                        <p>The breakthrough came in 2002 with the AKS algorithm - the first unconditional deterministic polynomial-time primality test. This shows how theoretical advances can have practical implications.</p>
+                    </div>
+
+                    <div class="step">
+                        <h3>The Knapsack Problem</h3>
+                        <p>Given items with weights and values, and a knapsack capacity, maximize the total value. Greedy approaches (like "highest value per weight") don't always work.</p>
+                        <div class="interactive-element">
+                            <div id="knapsackDemo">
+                                <h4>Try it yourself:</h4>
+                                <p>Knapsack capacity: 50 pounds</p>
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0;">
+                                    <div style="background: #3498db; color: white; padding: 15px; border-radius: 8px; text-align: center;">
+                                        <strong>Item 1</strong><br>
+                                        Weight: 10 lbs<br>
+                                        Value: $60<br>
+                                        Ratio: $6/lb
+                                    </div>
+                                    <div style="background: #e74c3c; color: white; padding: 15px; border-radius: 8px; text-align: center;">
+                                        <strong>Item 2</strong><br>
+                                        Weight: 20 lbs<br>
+                                        Value: $100<br>
+                                        Ratio: $5/lb
+                                    </div>
+                                    <div style="background: #27ae60; color: white; padding: 15px; border-radius: 8px; text-align: center;">
+                                        <strong>Item 3</strong><br>
+                                        Weight: 30 lbs<br>
+                                        Value: $120<br>
+                                        Ratio: $4/lb
+                                    </div>
+                                </div>
+                                <p><strong>Greedy choice:</strong> Items 1+2 = $160 (30 lbs)<br>
+                                <strong>Optimal choice:</strong> Items 2+3 = $220 (50 lbs)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h3>The Collatz Conjecture</h3>
+                        <p>This unsolved problem asks: Does the sequence n/2 (if even) or 3n+1 (if odd) always reach 1?</p>
+                        <div class="interactive-element">
+                            <h4>Collatz Sequence Calculator</h4>
+                            <input type="number" id="collatzInput" placeholder="Enter a number" min="1" style="padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc;">
+                            <button onclick="calculateCollatz()" class="btn btn-primary">Calculate Sequence</button>
+                            <div id="collatzResult" style="margin-top: 15px; font-family: monospace;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">🧠 Quick Check: What makes a problem "efficiently solvable"?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="efficiency" style="margin-right: 10px;">
+                        Time complexity is O(√n) where n is the input value
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="efficiency" style="margin-right: 10px;">
+                        Time complexity is polynomial in the size of the input representation
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="efficiency" style="margin-right: 10px;">
+                        The algorithm always terminates
+                    </label>
+                    <div class="feedback correct">
+                        ✅ Correct! Efficiency means polynomial time in the input size (like log n for a number n), not the value itself.
+                    </div>
+                    <div class="feedback incorrect">
+                        ❌ Think about it: for a 256-bit number, O(√n) would still be exponential in the input size (256 bits).
+                    </div>
+                </div>
+            </section>
+
+            <!-- Formal Languages Section -->
+            <section id="formal-languages" class="section">
+                <h1>📝 Formal Languages: The Mathematics of Words</h1>
+
+                <div class="concept-card">
+                    <h2>🎯 Why Formal Languages?</h2>
+                    <p>To study algorithms formally, we need to represent all possible inputs as strings over alphabets. This abstraction allows us to focus on the essential computational properties.</p>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Alphabet (Σ)</h3>
+                    <p>A finite, non-empty set of symbols (letters).</p>
+                    <div class="interactive-element">
+                        <h4>🔧 Alphabet Builder</h4>
+                        <p>Click to add symbols to create different alphabets:</p>
+                        <div style="margin: 15px 0;">
+                            <button onclick="addSymbol('0')" class="btn btn-primary" style="margin: 5px;">0</button>
+                            <button onclick="addSymbol('1')" class="btn btn-primary" style="margin: 5px;">1</button>
+                            <button onclick="addSymbol('a')" class="btn btn-primary" style="margin: 5px;">a</button>
+                            <button onclick="addSymbol('b')" class="btn btn-primary" style="margin: 5px;">b</button>
+                            <button onclick="addSymbol('(')" class="btn btn-primary" style="margin: 5px;">(</button>
+                            <button onclick="addSymbol(')')" class="btn btn-primary" style="margin: 5px;">)</button>
+                            <button onclick="clearAlphabet()" class="btn btn-danger" style="margin: 5px;">Clear</button>
+                        </div>
+                        <p><strong>Current Alphabet:</strong> <span id="currentAlphabet">∅</span></p>
+                        <div id="alphabetDisplay" class="alphabet-visualizer"></div>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Words and Strings</h3>
+                    <p>A word (or string) is a finite sequence of symbols from an alphabet.</p>
+                    <div class="interactive-element">
+                        <h4>🔧 Word Generator</h4>
+                        <p>Generate words over the binary alphabet {0, 1}:</p>
+                        <div style="margin: 15px 0;">
+                            Length: <input type="range" id="wordLength" min="0" max="8" value="3" oninput="updateWordLength()">
+                            <span id="lengthDisplay">3</span>
+                            <button onclick="generateRandomWord()" class="btn btn-success">Generate Random Word</button>
+                        </div>
+                        <div id="generatedWords" style="margin: 15px 0; font-family: monospace; font-size: 1.2em;"></div>
+                        <p><strong>Word length |w|:</strong> <span id="wordLengthDisplay">0</span></p>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Σ* (Sigma Star)</h3>
+                    <p>The set of ALL possible words over alphabet Σ, including the empty string ε.</p>
+                    <div class="example-box">
+                        <h4>Example: B* where B = {0, 1}</h4>
+                        <p>B* = {ε, 0, 1, 00, 01, 10, 11, 000, 001, 010, 011, 100, 101, 110, 111, ...}</p>
+                        <div class="interactive-element">
+                            <h4>🔧 Σ* Explorer</h4>
+                            <p>Explore the first few elements of {0,1}*:</p>
+                            <div id="sigmaStarDisplay" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 10px; margin: 15px 0;">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            <button onclick="expandSigmaStar()" class="btn btn-primary">Show More Words</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Languages (L)</h3>
+                    <p>A language is a subset of Σ*. This is how we formalize decision problems!</p>
+                    <div class="interactive-element">
+                        <h4>🔧 Language Examples</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0;">
+                            <div style="background: #3498db; color: white; padding: 20px; border-radius: 10px;">
+                                <h5>L₁ = {0ⁿ1ⁿ | n ≥ 0}</h5>
+                                <p>Equal numbers of 0s followed by 1s</p>
+                                <div style="font-family: monospace; margin: 10px 0;">
+                                    ε ∈ L₁ ✓<br>
+                                    01 ∈ L₁ ✓<br>
+                                    0011 ∈ L₁ ✓<br>
+                                    001 ∉ L₁ ✗
+                                </div>
+                            </div>
+                            <div style="background: #e74c3c; color: white; padding: 20px; border-radius: 10px;">
+                                <h5>L₂ = Prime Numbers</h5>
+                                <p>Decimal representations of primes</p>
+                                <div style="font-family: monospace; margin: 10px 0;">
+                                    2 ∈ L₂ ✓<br>
+                                    3 ∈ L₂ ✓<br>
+                                    4 ∉ L₂ ✗<br>
+                                    17 ∈ L₂ ✓
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quiz-container">
+                            <div class="quiz-question">🧠 Test Your Understanding: Which strings belong to L = {w ∈ {a,b}* | w starts and ends with the same symbol}?</div>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 15px 0;">
+                                <label class="quiz-option" onclick="selectLanguageQuiz(this, true)">
+                                    <input type="checkbox" style="margin-right: 10px;"> "aba"
+                                </label>
+                                <label class="quiz-option" onclick="selectLanguageQuiz(this, false)">
+                                    <input type="checkbox" style="margin-right: 10px;"> "ab"
+                                </label>
+                                <label class="quiz-option" onclick="selectLanguageQuiz(this, true)">
+                                    <input type="checkbox" style="margin-right: 10px;"> "a"
+                                </label>
+                                <label class="quiz-option" onclick="selectLanguageQuiz(this, true)">
+                                    <input type="checkbox" style="margin-right: 10px;"> "bab"
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Language Operations Section -->
+            <section id="language-operations" class="section">
+                <h1>🔧 Language Operations: Building Complex Languages</h1>
+
+                <div class="concept-card">
+                    <h2>🎯 Understanding Language Operations</h2>
+                    <p>Just like numbers have arithmetic operations, languages have their own operations. These help us build complex languages from simpler ones and understand their relationships.</p>
+                </div>
+
+                <div class="language-operations">
+                    <div class="operation-card" onclick="demonstrateOperation('union')">
+                        <h3>∪ Union</h3>
+                        <p>L₁ ∪ L₂ = {w | w ∈ L₁ or w ∈ L₂}</p>
+                        <div style="margin: 10px 0; font-family: monospace; color: #666;">
+                            Click to see example
+                        </div>
+                    </div>
+
+                    <div class="operation-card" onclick="demonstrateOperation('intersection')">
+                        <h3>∩ Intersection</h3>
+                        <p>L₁ ∩ L₂ = {w | w ∈ L₁ and w ∈ L₂}</p>
+                        <div style="margin: 10px 0; font-family: monospace; color: #666;">
+                            Click to see example
+                        </div>
+                    </div>
+
+                    <div class="operation-card" onclick="demonstrateOperation('complement')">
+                        <h3>¯ Complement</h3>
+                        <p>L̄ = {w ∈ Σ* | w ∉ L}</p>
+                        <div style="margin: 10px 0; font-family: monospace; color: #666;">
+                            Click to see example
+                        </div>
+                    </div>
+
+                    <div class="operation-card" onclick="demonstrateOperation('concatenation')">
+                        <h3>· Concatenation</h3>
+                        <p>L₁ · L₂ = {w₁w₂ | w₁ ∈ L₁, w₂ ∈ L₂}</p>
+                        <div style="margin: 10px 0; font-family: monospace; color: #666;">
+                            Click to see example
+                        </div>
+                    </div>
+
+                    <div class="operation-card" onclick="demonstrateOperation('kleene')">
+                        <h3>* Kleene Star</h3>
+                        <p>L* = {w₁w₂...wₖ | k ≥ 0, each wᵢ ∈ L}</p>
+                        <div style="margin: 10px 0; font-family: monospace; color: #666;">
+                            Click to see example
+                        </div>
+                    </div>
+                </div>
+
+                <div id="operationDemo" class="interactive-element" style="display: none;">
+                    <h3 id="operationTitle">Operation Demo</h3>
+                    <div id="operationContent"></div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔧 Interactive Language Operation Playground</h3>
+                    <p>Let's work with two simple languages:</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                        <div>
+                            <h4>L₁ = {a, b}</h4>
+                            <div id="L1Display" style="font-family: monospace; padding: 10px; background: #e8f4fd; border-radius: 8px;">
+                                a, b
+                            </div>
+                        </div>
+                        <div>
+                            <h4>L₂ = {0, 1}</h4>
+                            <div id="L2Display" style="font-family: monospace; padding: 10px; background: #fdf6e3; border-radius: 8px;">
+                                0, 1
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin: 20px 0;">
+                        <button onclick="showOperationResult('union')" class="btn btn-primary" style="margin: 5px;">L₁ ∪ L₂</button>
+                        <button onclick="showOperationResult('concat')" class="btn btn-primary" style="margin: 5px;">L₁ · L₂</button>
+                        <button onclick="showOperationResult('kleene')" class="btn btn-primary" style="margin: 5px;">L₁*</button>
+                    </div>
+
+                    <div id="operationResult" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; display: none;">
+                        <h4 id="resultTitle">Result:</h4>
+                        <div id="resultContent" style="font-family: monospace; font-size: 1.1em;"></div>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">🧠 Master Check: If L = {ab, ba}, what is L²?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="kleene-quiz" style="margin-right: 10px;">
+                        {ab, ba, abab, baba}
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="kleene-quiz" style="margin-right: 10px;">
+                        {abab, abba, baab, baba}
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="kleene-quiz" style="margin-right: 10px;">
+                        {ε, ab, ba}
+                    </label>
+                    <div class="feedback correct">
+                        ✅ Perfect! L² = L·L means concatenating each word in L with each word in L.
+                    </div>
+                    <div class="feedback incorrect">
+                        ❌ Remember: L² means L concatenated with itself, not L ∪ L or L*.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Turing Machines Section -->
+            <section id="turing-machines" class="section">
+                <h1>🖥️ Turing Machines: The Ultimate Computing Model</h1>
+
+                <div class="concept-card">
+                    <h2>🎯 Why Turing Machines?</h2>
+                    <p>Turing Machines are our formal model of computation. Despite their simplicity, they can compute anything that any computer can compute. This makes them perfect for studying the fundamental limits of computation.</p>
+                </div>
+
+                <div class="tm-visualizer">
+                    <h3>🔧 Turing Machine Anatomy</h3>
+                    <div class="tape-container">
+                        <div class="tape-cell">...</div>
+                        <div class="tape-cell">a</div>
+                        <div class="tape-cell head" id="tmHead">b</div>
+                        <div class="tape-cell">b</div>
+                        <div class="tape-cell">a</div>
+                        <div class="tape-cell">⊔</div>
+                        <div class="tape-cell">...</div>
+                    </div>
+                    <div class="state-display">
+                        Current State: <span id="tmCurrentState">q₀</span>
+                    </div>
+                    <p style="text-align: center; margin: 20px 0;">
+                        The head can read the current symbol, write a new symbol, and move left or right.
+                    </p>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Formal Definition: DTM = (Q, Σ, Γ, s, t, r, δ)</h3>
+                    <div class="step-by-step">
+                        <div class="step">
+                            <strong>Q:</strong> Finite set of states (the "states of mind")
+                            <div class="interactive-element">
+                                <p>Think of states as different "modes" the machine can be in:</p>
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0;">
+                                    <div style="background: #3498db; color: white; padding: 8px 12px; border-radius: 15px;">q₀ (start)</div>
+                                    <div style="background: #27ae60; color: white; padding: 8px 12px; border-radius: 15px;">q₁ (reading)</div>
+                                    <div style="background: #e74c3c; color: white; padding: 8px 12px; border-radius: 15px;">q₂ (checking)</div>
+                                    <div style="background: #f39c12; color: white; padding: 8px 12px; border-radius: 15px;">accept</div>
+                                    <div style="background: #95a5a6; color: white; padding: 8px 12px; border-radius: 15px;">reject</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <strong>Σ (Input Alphabet):</strong> Symbols allowed in input
+                            <div class="interactive-element">
+                                <p>Example: For binary strings, Σ = {0, 1}</p>
+                                <div id="inputAlphabetDemo" class="alphabet-visualizer">
+                                    <div class="symbol">0</div>
+                                    <div class="symbol">1</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <strong>Γ (Tape Alphabet):</strong> All symbols that can appear on tape
+                            <div class="interactive-element">
+                                <p>Always includes Σ plus the blank symbol ⊔</p>
+                                <div id="tapeAlphabetDemo" class="alphabet-visualizer">
+                                    <div class="symbol">0</div>
+                                    <div class="symbol">1</div>
+                                    <div class="symbol" style="background: #e74c3c;">⊔</div>
+                                    <div class="symbol" style="background: #9b59b6;">X</div>
+                                </div>
+                                <p style="margin-top: 10px;"><em>⊔ is the blank symbol, X might be used for marking</em></p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <strong>δ (Transition Function):</strong> The "program" of the machine
+                            <div class="interactive-element">
+                                <p>δ(current_state, read_symbol) → (next_state, write_symbol, direction)</p>
+                                <div class="example-box">
+                                    <h4>Example Transition:</h4>
+                                    <p style="font-family: monospace; font-size: 1.1em; text-align: center; margin: 15px 0;">
+                                        δ(q₀, '1') = (q₁, '0', R)
+                                    </p>
+                                    <p>"If in state q₀ and reading '1', then go to state q₁, write '0', and move Right"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-element">
+                    <h3>🔧 Build Your Own Transition Function</h3>
+                    <p>Create a simple TM that flips all bits (0→1, 1→0):</p>
+                    <div id="transitionBuilder">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 20px 0;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <h4>Rule 1:</h4>
+                                <p>δ(q₀, '0') = (q₀, '1', R)</p>
+                                <small>Read 0, write 1, move right, stay in q₀</small>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <h4>Rule 2:</h4>
+                                <p>δ(q₀, '1') = (q₀, '0', R)</p>
+                                <small>Read 1, write 0, move right, stay in q₀</small>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                                <h4>Rule 3:</h4>
+                                <p>δ(q₀, '⊔') = (accept, '⊔', R)</p>
+                                <small>Read blank, accept (we're done)</small>
+                            </div>
+                        </div>
+                        <button onclick="simulateBitFlip()" class="btn btn-success">Simulate on "1011"</button>
+                        <div id="bitFlipResult" style="margin-top: 15px;"></div>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">🧠 Conceptual Check: What makes a DTM "deterministic"?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="dtm-quiz" style="margin-right: 10px;">
+                        It always halts
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="dtm-quiz" style="margin-right: 10px;">
+                        For each (state, symbol) pair, there's exactly one possible next configuration
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="dtm-quiz" style="margin-right: 10px;">
+                        It can only move in one direction
+                    </label>
+                    <div class="feedback correct">
+                        ✅ Exactly right! δ is a function, meaning each input maps to exactly one output.
+                    </div>
+                    <div class="feedback incorrect">
+                        ❌ "Deterministic" refers to having no choice in transitions, not halting or movement direction.
+                    </div>
+                </div>
+            </section>
+
+            <!-- DTM Operation Section -->
+            <section id="dtm-operation" class="section">
+                <h1>⚙️ DTM Operation: Step-by-Step Execution</h1>
+
+                <div class="concept-card">
+                    <h2>🎯 Understanding DTM Execution</h2>
+                    <p>A DTM execution is a sequence of configurations. Each step applies the transition function to move from one configuration to the next. Understanding this process is crucial for designing and analyzing algorithms.</p>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Configuration: [state, tape, head_position]</h3>
+                    <p>A configuration captures the complete state of the TM at any moment.</p>
+                    <div class="interactive-element">
+                        <h4>🔧 Configuration Visualizer</h4>
+                        <p>Let's trace through a simple example:</p>
+                        <div id="configurationTracer">
+                            <div class="tm-visualizer">
+                                <div id="traceTape" class="tape-container">
+                                    <!-- Will be populated by JavaScript -->
+                                </div>
+                                <div class="state-display">
+                                    Configuration: <span id="traceConfig">[q₀, abb⊔⊔..., 1]</span>
+                                </div>
+                                <div class="controls">
+                                    <button onclick="resetTrace()" class="btn btn-danger">Reset</button>
+                                    <button onclick="stepTrace()" class="btn btn-primary">Step</button>
+                                    <button onclick="runTrace()" class="btn btn-success">Run All</button>
+                                </div>
+                                <div id="traceInfo" style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                                    <p><strong>Machine:</strong> Accepts strings that start and end with same symbol</p>
+                                    <p><strong>Current Input:</strong> "abb"</p>
+                                    <p><strong>Next Action:</strong> <span id="nextAction">Read 'a', remember it, move right</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-by-step">
+                    <div class="step">
+                        <h3>Initialization Phase</h3>
+                        <p>The input word w is placed on the tape, head starts at position 1, machine starts in state s.</p>
+                        <div class="example-box">
+                            <strong>Example:</strong> For input "101", initial configuration is [s, 101⊔⊔..., 1]
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h3>Execution Phase</h3>
+                        <p>Repeatedly apply δ until reaching accept, reject, or looping forever.</p>
+                        <div class="interactive-element">
+                            <h4>🔧 Transition Rules Practice</h4>
+                            <p>Given δ(q₀, '1') = (q₁, '0', R), what happens to configuration [q₀, 101⊔..., 1]?</p>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0;">
+                                <div onclick="selectConfigTransition(this, false)" class="quiz-option" style="cursor: pointer;">
+                                    [q₁, 001⊔..., 1]
+                                </div>
+                                <div onclick="selectConfigTransition(this, true)" class="quiz-option" style="cursor: pointer;">
+                                    [q₁, 001⊔..., 2]
+                                </div>
+                                <div onclick="selectConfigTransition(this, false)" class="quiz-option" style="cursor: pointer;">
+                                    [q₀, 101⊔..., 2]
+                                </div>
+                            </div>
+                            <div id="transitionFeedback" class="feedback" style="display: none;">
+                                The machine writes '0' at position 1, moves to position 2, and changes to state q₁.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h3>Termination Conditions</h3>
+                        <ul>
+                            <li><strong>Accept:</strong> Machine reaches state 't'</li>
+                            <li><strong>Reject:</strong> Machine reaches state 'r'</li>
+                            <li><strong>Loop:</strong> Machine never reaches 't' or 'r'</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="interactive-element">
+                    <h3>🔧 Complete Execution Tracer</h3>
+                    <p>Watch how a DTM determines if a string has equal numbers of 0s and 1s:</p>
+                    <div style="margin: 20px 0;">
+                        <label>Input string: </label>
+                        <input type="text" id="executionInput" value="0011" placeholder="Enter binary string" style="padding: 8px; margin: 0 10px; border-radius: 5px; border: 1px solid #ccc;">
+                        <button onclick="startExecution()" class="btn btn-primary">Load & Start</button>
+                    </div>
+                    <div id="executionTracer" style="display: none;">
+                        <div class="tm-visualizer">
+                            <div id="execTape" class="tape-container"></div>
+                            <div class="state-display">
+                                Step: <span id="execStep">0</span> |
+                                State: <span id="execState">q₀</span> |
+                                Head: <span id="execHead">1</span>
+                            </div>
+                            <div class="controls">
+                                <button onclick="stepExecution()" class="btn btn-primary" id="stepBtn">Step</button>
+                                <button onclick="runExecution()" class="btn btn-success" id="runBtn">Run</button>
+                                <button onclick="resetExecution()" class="btn btn-danger">Reset</button>
+                            </div>
+                            <div id="execHistory" style="margin-top: 15px; max-height: 200px; overflow-y: auto; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                                <h4>Execution History:</h4>
+                                <div id="historyList" style="font-family: monospace; font-size: 0.9em;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Language Classes Section -->
+            <section id="language-classes" class="section">
+                <h1>🏗️ Language Classes: The Hierarchy of Computation</h1>
+
+                <div class="concept-card">
+                    <h2>🎯 Understanding Computational Complexity</h2>
+                    <p>Not all languages are created equal. Some can be decided quickly, others slowly, and some cannot be decided at all! This hierarchy tells us fundamental truths about the limits of computation.</p>
+                </div>
+
+                <div class="language-hierarchy">
+                    <svg width="100%" height="400" viewBox="0 0 500 400">
+                        <!-- Computably Enumerable -->
+                        <ellipse cx="250" cy="200" rx="220" ry="180" fill="rgba(155, 89, 182, 0.2)" stroke="#9b59b6" stroke-width="3"/>
+                        <text x="250" y="60" text-anchor="middle" font-size="16" font-weight="bold" fill="#9b59b6">Computably Enumerable (CE)</text>
+
+                        <!-- Computable -->
+                        <ellipse cx="250" cy="200" rx="170" ry="140" fill="rgba(52, 152, 219, 0.2)" stroke="#3498db" stroke-width="3"/>
+                        <text x="250" y="100" text-anchor="middle" font-size="14" font-weight="bold" fill="#3498db">Computable (Decidable)</text>
+
+                        <!-- Context-Free -->
+                        <ellipse cx="250" cy="200" rx="120" ry="100" fill="rgba(46, 204, 113, 0.2)" stroke="#2ecc71" stroke-width="3"/>
+                        <text x="250" y="140" text-anchor="middle" font-size="12" font-weight="bold" fill="#2ecc71">Context-Free</text>
+
+                        <!-- Regular -->
+                        <ellipse cx="250" cy="200" rx="80" ry="60" fill="rgba(241, 196, 15, 0.3)" stroke="#f1c40f" stroke-width="3"/>
+                        <text x="250" y="200" text-anchor="middle" font-size="12" font-weight="bold" fill="#f39c12">Regular</text>
+
+                        <!-- Interactive elements -->
+                        <circle cx="380" cy="120" r="8" fill="#e74c3c" onclick="showLanguageExample('halting')" style="cursor: pointer;">
+                            <title>Halting Problem (CE but not Computable)</title>
+                        </circle>
+
+                        <circle cx="320" cy="160" r="8" fill="#3498db" onclick="showLanguageExample('prime')" style="cursor: pointer;">
+                            <title>Prime Numbers (Computable)</title>
+                        </circle>
+
+                        <circle cx="280" cy="180" r="8" fill="#2ecc71" onclick="showLanguageExample('balanced')" style="cursor: pointer;">
+                            <title>Balanced Parentheses (Context-Free)</title>
+                        </circle>
+
+                        <circle cx="250" cy="200" r="8" fill="#f39c12" onclick="showLanguageExample('binary')" style="cursor: pointer;">
+                            <title>Binary strings ending in 01 (Regular)</title>
+                        </circle>
+                    </svg>
+
+                    <div id="languageExample" class="definition-box" style="display: none; margin-top: 20px;">
+                        <h3 id="exampleTitle">Language Example</h3>
+                        <div id="exampleContent"></div>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Computable Languages</h3>
+                    <p>A language L is computable if there exists a <strong>halting DTM</strong> M such that L = L(M).</p>
+                    <div class="interactive-element">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                            <div style="background: #d5f4e6; padding: 20px; border-radius: 10px;">
+                                <h4>✅ If w ∈ L:</h4>
+                                <p>M accepts w (goes to state t)</p>
+                                <div style="font-family: monospace; margin: 10px 0; color: #27ae60;">
+                                    [s, w⊔⊔..., 1] ⊢* [t, ..., ...]
+                                </div>
+                            </div>
+                            <div style="background: #fdf2f2; padding: 20px; border-radius: 10px;">
+                                <h4>❌ If w ∉ L:</h4>
+                                <p>M rejects w (goes to state r)</p>
+                                <div style="font-family: monospace; margin: 10px 0; color: #e74c3c;">
+                                    [s, w⊔⊔..., 1] ⊢* [r, ..., ...]
+                                </div>
+                            </div>
+                        </div>
+                        <p style="text-align: center; font-weight: bold; color: #2c3e50;">Key Point: Always halts!</p>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Computably Enumerable Languages</h3>
+                    <p>A language L is computably enumerable if there exists a DTM M such that L = L(M).</p>
+                    <div class="interactive-element">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                            <div style="background: #d5f4e6; padding: 20px; border-radius: 10px;">
+                                <h4>✅ If w ∈ L:</h4>
+                                <p>M accepts w (eventually halts in t)</p>
+                                <div style="font-family: monospace; margin: 10px 0; color: #27ae60;">
+                                    [s, w⊔⊔..., 1] ⊢* [t, ..., ...]
+                                </div>
+                            </div>
+                            <div style="background: #fff3cd; padding: 20px; border-radius: 10px;">
+                                <h4>❓ If w ∉ L:</h4>
+                                <p>M either rejects w OR loops forever</p>
+                                <div style="font-family: monospace; margin: 10px 0; color: #856404;">
+                                    [s, w⊔⊔..., 1] ⊢* [r, ..., ...] <br>
+                                    OR loops infinitely
+                                </div>
+                            </div>
+                        </div>
+                        <p style="text-align: center; font-weight: bold; color: #2c3e50;">Key Point: Might not halt!</p>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">🧠 Critical Understanding: Is every computable language also computably enumerable?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="hierarchy-quiz" style="margin-right: 10px;">
+                        Yes, because a halting DTM is still a DTM
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="hierarchy-quiz" style="margin-right: 10px;">
+                        No, they are completely different classes
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="hierarchy-quiz" style="margin-right: 10px;">
+                        Sometimes, depending on the specific language
+                    </label>
+                    <div class="feedback correct">
+                        ✅ Perfect! Every halting DTM is also just a DTM, so Computable ⊆ CE.
+                    </div>
+                    <div class="feedback incorrect">
+                        ❌ Think about it: if a DTM always halts (computable), it's still a valid DTM (CE).
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔧 The Famous Halting Problem</h3>
+                    <p>The Halting Problem asks: "Given a DTM M and input w, does M halt on w?"</p>
+                    <div class="interactive-element">
+                        <h4>Why is it undecidable?</h4>
+                        <button onclick="showHaltingProof()" class="btn btn-primary">Show Diagonalization Proof</button>
+                        <div id="haltingProof" class="toggle-content">
+                            <div style="background: #2c3e50; color: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                                <h5>Proof by Contradiction:</h5>
+                                <ol style="line-height: 1.8;">
+                                    <li>Assume H exists: H(⟨M⟩, w) = "yes" if M halts on w, "no" otherwise</li>
+                                    <li>Construct D: D(⟨M⟩) = if H(⟨M⟩, ⟨M⟩) = "yes" then loop forever, else halt</li>
+                                    <li>What does D(⟨D⟩) do?</li>
+                                    <li>If D halts on ⟨D⟩, then H(⟨D⟩, ⟨D⟩) = "yes", so D loops on ⟨D⟩ ⚡</li>
+                                    <li>If D loops on ⟨D⟩, then H(⟨D⟩, ⟨D⟩) = "no", so D halts on ⟨D⟩ ⚡</li>
+                                    <li>Contradiction! H cannot exist.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive TM Section -->
+            <section id="interactive-tm" class="section">
+                <h1>🎮 Interactive Turing Machine Laboratory</h1>
+
+                <div class="concept-card">
+                    <h2>🎯 Hands-On Learning</h2>
+                    <p>The best way to understand Turing Machines is to build and run them yourself. This laboratory provides pre-built examples and lets you create your own machines.</p>
+                </div>
+
+                <div class="interactive-element">
+                    <h3>🔧 Pre-Built TM Examples</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 20px 0;">
+                        <button onclick="loadTMExample('binary-increment')" class="btn btn-primary" style="height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            <strong>Binary Increment</strong>
+                            <small>Adds 1 to binary number</small>
+                        </button>
+                        <button onclick="loadTMExample('palindrome')" class="btn btn-primary" style="height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            <strong>Palindrome Checker</strong>
+                            <small>Accepts palindromes</small>
+                        </button>
+                        <button onclick="loadTMExample('equal-count')" class="btn btn-primary" style="height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            <strong>Equal 0s and 1s</strong>
+                            <small>Accepts if equal count</small>
+                        </button>
+                        <button onclick="loadTMExample('copy')" class="btn btn-primary" style="height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            <strong>String Copier</strong>
+                            <small>Duplicates input: w#w</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tm-visualizer">
+                    <h3 id="tmTitle">Interactive Turing Machine</h3>
+                    <p id="tmDescription">Load an example or create your own machine</p>
+
+                    <div style="margin: 20px 0;">
+                        <label>Input Tape: </label>
+                        <input type="text" id="tmInput" placeholder="Enter input string" style="padding: 8px; margin: 0 10px; border-radius: 5px; border: 1px solid #ccc;">
+                        <button onclick="loadTape()" class="btn btn-success">Load Tape</button>
+                    </div>
+
+                    <div id="interactiveTape" class="tape-container">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+
+                    <div class="state-display">
+                        State: <span id="interactiveState">q₀</span> |
+                        Head: <span id="interactiveHead">1</span> |
+                        Steps: <span id="interactiveSteps">0</span> |
+                        Status: <span id="interactiveStatus">Ready</span>
+                    </div>
+
+                    <div class="controls">
+                        <button onclick="stepInteractiveTM()" class="btn btn-primary" id="interactiveStepBtn">Step</button>
+                        <button onclick="runInteractiveTM()" class="btn btn-success" id="interactiveRunBtn">Run</button>
+                        <button onclick="resetInteractiveTM()" class="btn btn-danger">Reset</button>
+                        <button onclick="showTransitionTable()" class="btn" style="background: #9b59b6; color: white;">Show Rules</button>
+                    </div>
+
+                    <div id="transitionTable" class="toggle-content" style="margin-top: 20px;">
+                        <h4>Transition Rules</h4>
+                        <div id="rulesList" style="font-family: monospace; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            Load an example to see transition rules
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-element">
+                    <h3>🔧 Design Your Own TM</h3>
+                    <p>Challenge: Create a TM that accepts strings of the form a^n b^n (equal numbers of a's followed by b's)</p>
+                    <div id="tmDesigner">
+                        <div style="margin: 20px 0;">
+                            <h4>Add Transition Rule:</h4>
+                            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 15px 0;">
+                                <input type="text" id="designerState" placeholder="State" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                                <input type="text" id="designerRead" placeholder="Read" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                                <input type="text" id="designerWrite" placeholder="Write" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                                <select id="designerMove" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                                    <option value="R">Right</option>
+                                    <option value="L">Left</option>
+                                </select>
+                                <input type="text" id="designerNext" placeholder="Next State" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                            </div>
+                            <button onclick="addTransitionRule()" class="btn btn-success">Add Rule</button>
+                            <button onclick="clearDesigner()" class="btn btn-danger">Clear All</button>
+                        </div>
+
+                        <div id="designerRules" style="margin: 20px 0; font-family: monospace; background: #f8f9fa; padding: 15px; border-radius: 8px; min-height: 100px;">
+                            <h4>Your Rules:</h4>
+                            <div id="userRulesList">No rules added yet</div>
+                        </div>
+
+                        <div style="margin: 20px 0;">
+                            <label>Test Input: </label>
+                            <input type="text" id="designerTestInput" placeholder="e.g., aabb" style="padding: 8px; margin: 0 10px; border-radius: 5px; border: 1px solid #ccc;">
+                            <button onclick="testUserTM()" class="btn btn-primary">Test Your TM</button>
+                        </div>
+
+                        <div id="designerResult" style="margin-top: 15px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Self-Test Section -->
+            <section id="self-test" class="section">
+                <h1>🧠 Self-Assessment: Test Your Mastery</h1>
+
+                <div class="concept-card">
+                    <h2>🎯 Comprehensive Review</h2>
+                    <p>Time to test your understanding! These questions cover all the key concepts from Lecture 1. Get 80% or better to consider yourself ready for the exam!</p>
+                </div>
+
+                <div id="selfTestContainer">
+                    <div class="quiz-container">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h3>Progress: <span id="testProgress">0/10</span></h3>
+                            <div class="progress-bar" style="width: 100%; margin: 10px 0;">
+                                <div id="testProgressBar" class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                            <p>Score: <span id="testScore">0</span> points</p>
+                        </div>
+                    </div>
+
+                    <!-- Question 1 -->
+                    <div class="quiz-container question-container" id="question1">
+                        <div class="quiz-question">1. Which of the following best describes why we use formal languages in computability theory?</div>
+                        <label class="quiz-option" onclick="answerSelfTest(1, 'A', false)">
+                            <input type="radio" name="q1" style="margin-right: 10px;">
+                            A) They make algorithms run faster
+                        </label>
+                        <label class="quiz-option" onclick="answerSelfTest(1, 'B', true)">
+                            <input type="radio" name="q1" style="margin-right: 10px;">
+                            B) They provide a uniform way to represent all possible inputs as strings
+                        </label>
+                        <label class="quiz-option" onclick="answerSelfTest(1, 'C', false)">
+                            <input type="radio" name="q1" style="margin-right: 10px;">
+                            C) They are easier to understand than regular programming languages
+                        </label>
+                        <div class="feedback" id="feedback1"></div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="quiz-container question-container" id="question2" style="display: none;">
+                        <div class="quiz-question">2. If L₁ = {a, bb} and L₂ = {c}, what is L₁ · L₂?</div>
+                        <label class="quiz-option" onclick="answerSelfTest(2, 'A', false)">
+                            <input type="radio" name="q2" style="margin-right: 10px;">
+                            A) {a, bb, c}
+                        </label>
+                        <label class="quiz-option" onclick="answerSelfTest(2, 'B', true)">
+                            <input type="radio" name="q2" style="margin-right: 10px;">
+                            B) {ac, bbc}
+                        </label>
+                        <label class="quiz-option" onclick="answerSelfTest(2, 'C', false)">
+                            <input type="radio" name="q2" style="margin-right: 10px;">
+                            C) {abc, bbbc}
+                        </label>
+                        <div class="feedback" id="feedback2"></div>
+                    </div>
+
+                    <!-- Question 3 -->
+                    <div class="quiz-container question-container" id="question3" style="display: none;">
+                        <div class="quiz-question">3. In a DTM, what does the transition function δ map from and to?</div>
+                        <label class="quiz-option" onclick="answerSelfTest(3, 'A', false)">
+                            <input type="radio" name="q3" style="margin-right: 10px;">
+                            A) From states to states
+                        </label>
+                        <label class="quiz-option" onclick="answerSelfTest(3, 'B', true)">
+                            <input type="radio" name="q3" style="margin-right: 10px;">
+                            B) From (state, tape symbol) pairs to (state, tape symbol, direction) triples
+                        </label>
+                        <label class="quiz-option" onclick="answerSelfTest(3, 'C', false)">
+                            <input type="radio" name="q3" style="margin-right: 10px;">
+                            C) From tape symbols to tape symbols
+                        </label>
+                        <div class="feedback" id="feedback3"></div>
+                    </div>
+
+                    <!-- Question 4 -->
+                    <div class="quiz-container question-container" id="question4" style="display: none;">
+                        <div class="quiz-question">4. Can the tape alphabet Γ be equal to the input alphabet Σ?</div>
+                        <label class="quiz-option" onclick="answerSelfTest(4, 'A', true)">
+                            <input type="radio" name="q4" style="margin-right: 10px;">
+                            A) No, because Γ must contain the blank symbol ⊔ which is not in Σ
+                        </label>
+                        <label class="quiz-option" onclick="answerSelfTest(4, 'B', false)">
+                            <input type="radio" name="q4" style="margin-right: 10px;">
+                            B) Yes, they can be identical
+                        </label>
+                        <label class="quiz-option" onclick="answerSelfTest(4, 'C', false)">
+                            <input type="radio" name="q4" style="margin-right: 10px;">
+                            C) Only if the machine never uses the blank symbol
+                        </label>
+                        <div class="feedback" id="feedback4"></div>
+                    </div>
+
+                    <!-- Question 5 -->
+                    <div class="quiz-container question-container" id="question5" style="display: none;">
+                        <div class="quiz-question">5. What makes a DTM "deterministic"?</div>
+                        <label class="quiz-option" onclick="answerSelfTest(5, 'A', false)">
+                            <input type="radio" name="q5" style="margin-right: 10px;">
+                            A) It always halts
+                        </label>
+                        <label class="quiz-option" onclick="answerSelfTest(5, 'B', true)">
+                            <input type="radio" name="q5" style="margin-right: 10px;">
+                            B) For each (state, symbol) pair, there's exactly one possible transition
+                        </label>
+                        <label class="quiz-option" onclick="answerSelfTest(5, 'C', false)">
+                            <input type="radio" name="q5" style="margin-right: 10px;">
+                            C) It can only move in one direction
+                        </label>
+                        <div class="feedback" id="feedback5"></div>
+                    </div>
+
+                    <!-- Add more questions up to 10 if needed, or adjust totalQuestions in JS -->
+
+                    <div id="testComplete" class="exam-connection" style="display: none;">
+                        <h2>🎉 Test Complete!</h2>
+                        <div id="finalScore" style="font-size: 1.5em; margin: 20px 0;"></div>
+                        <div id="recommendations" style="margin: 20px 0;"></div>
+                        <button onclick="resetSelfTest()" class="btn btn-primary">Retake Test</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Exam Preparation Section -->
+            <section id="exam-prep" class="section">
+                <h1>🎯 Exam Preparation: Mock Questions & Strategy</h1>
+
+                <div class="concept-card">
+                    <h2>🎯 Your Roadmap to Success</h2>
+                    <p>Based on the mock exam and your learning progress, here's exactly what you need to know for the exam. Focus on these key areas and practice the problem-solving strategies.</p>
+                </div>
+
+                <div class="exam-connection">
+                    <h3>🔥 High-Priority Mock Exam Connections</h3>
+                    <div class="step-by-step">
+                        <div class="step">
+                            <h4>Mock Question 1: Constructing Multi-tape DTMs</h4>
+                            <p><strong>Language:</strong> L = {aⁿbⁿa²ⁿ | n ∈ ℕ \ {0}}</p>
+                            <div class="example-box">
+                                <h5>🔧 Strategy Practice:</h5>
+                                <p>Design approach for this type of problem:</p>
+                                <ol>
+                                    <li><strong>Phase 1:</strong> Copy first block of a's to tape 2</li>
+                                    <li><strong>Phase 2:</strong> Match b's with a's from tape 2</li>
+                                    <li><strong>Phase 3:</strong> Count second block of a's (should be 2n)</li>
+                                </ol>
+                                <button onclick="showDTMStrategy()" class="btn btn-primary">Show Detailed Strategy</button>
+                                <div id="dtmStrategy" class="toggle-content">
+                                    <div style="background: #2c3e50; color: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                                        <h6>State Design:</h6>
+                                        <ul>
+                                            <li><strong>s:</strong> Start state, begin reading first a's</li>
+                                            <li><strong>q₁:</strong> Copying a's to tape 2</li>
+                                            <li><strong>q₂:</strong> Matching b's against tape 2</li>
+                                            <li><strong>q₃:</strong> Reading final a's (should be 2n)</li>
+                                            <li><strong>q₄:</strong> Checking that final a's are exactly 2n</li>
+                                            <li><strong>q₅:</strong> Verifying end of input</li>
+                                        </ul>
+                                        <h6>Key Insights:</h6>
+                                        <p>• Use tape 2 as a counter/marker<br>
+                                        • "Stay" direction helps avoid unnecessary movement<br>
+                                        • Always verify complete input consumption</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <h4>Mock Question 2: Computability and Reductions</h4>
+                            <p><strong>Question:</strong> Is L = {⟨M⟩ | 1101 ∈ L(M)} computable?</p>
+                            <div class="example-box">
+                                <h5>🔧 Reduction Strategy:</h5>
+                                <p>This is a classic undecidability proof using reduction from the Halting Problem.</p>
+                                <button onclick="showReductionStrategy()" class="btn btn-primary">Show Reduction Technique</button>
+                                <div id="reductionStrategy" class="toggle-content">
+                                    <div style="background: #2c3e50; color: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                                        <h6>Reduction Steps:</h6>
+                                        <ol>
+                                            <li><strong>Assume L is computable</strong> (for contradiction)</li>
+                                            <li><strong>Construct function f:</strong> f(⟨M,w⟩) = ⟨M'⟩ where M' accepts all strings if M halts on w, and accepts nothing otherwise</li>
+                                            <li><strong>Key insight:</strong> 1101 ∈ L(M') ⟺ M halts on w</li>
+                                            <li><strong>This gives us:</strong> HP ≤ₘ L</li>
+                                            <li><strong>Contradiction:</strong> If L were computable, HP would be too</li>
+                                        </ol>
+                                        <p><strong>Template:</strong> This technique works for many undecidability proofs!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-element">
+                    <h3>🔧 Exam Simulation: Practice Under Pressure</h3>
+                    <p>Timed practice problems similar to what you'll see on the exam:</p>
+
+                    <div id="examSimulation">
+                        <div style="text-align: center; margin: 20px 0;">
+                            <div style="font-size: 1.5em; margin: 10px 0;">
+                                Time Remaining: <span id="examTimer" style="color: #e74c3c; font-weight: bold;">15:00</span>
+                            </div>
+                            <button onclick="startExamSimulation()" class="btn btn-success" id="startExamBtn">Start 15-minute Challenge</button>
+                            <button onclick="stopExamSimulation()" class="btn btn-danger" id="stopExamBtn" style="display: none;">Stop</button>
+                        </div>
+
+                        <div id="examQuestions" style="display: none;">
+                            <div class="quiz-container">
+                                <div class="quiz-question">
+                                    <strong>Problem 1 (5 points):</strong> Construct a DTM that accepts the language L = {w#w | w ∈ {0,1}*}.
+                                    Briefly explain your approach in words, then give the formal 7-tuple definition.
+                                </div>
+                                <textarea id="examAnswer1" rows="8" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin: 10px 0;" placeholder="Your answer here..."></textarea>
+                            </div>
+
+                            <div class="quiz-container">
+                                <div class="quiz-question">
+                                    <strong>Problem 2 (3 points):</strong> Is the language L = {⟨M⟩ | L(M) = ∅} computable?
+                                    If yes, describe a deciding algorithm. If no, prove it by reduction.
+                                </div>
+                                <textarea id="examAnswer2" rows="6" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin: 10px 0;" placeholder="Your answer here..."></textarea>
+                            </div>
+
+                            <div class="quiz-container">
+                                <div class="quiz-question">
+                                    <strong>Problem 3 (2 points):</strong> Give the first 5 configurations in the run of a DTM that accepts {0ⁿ1ⁿ | n ≥ 0} on input "0011".
+                                </div>
+                                <textarea id="examAnswer3" rows="4" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin: 10px 0;" placeholder="Your answer here..."></textarea>
+                            </div>
+
+                            <button onclick="submitExamSimulation()" class="btn btn-primary">Submit Answers</button>
+                        </div>
+
+                        <div id="examResults" style="display: none;">
+                            <h3>📊 Simulation Results</h3>
+                            <div id="examFeedback"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>📚 Key Formulas & Definitions for the Exam</h3>
+                    <div class="example-box">
+                        <h4>Essential Definitions:</h4>
+                        <ul style="line-height: 2;">
+                            <li><strong>DTM:</strong> M = (Q, Σ, Γ, s, t, r, δ)</li>
+                            <li><strong>Configuration:</strong> [state, tape, head_position]</li>
+                            <li><strong>L(M):</strong> {w ∈ Σ* | M accepts w}</li>
+                            <li><strong>Computable:</strong> ∃ halting DTM M such that L = L(M)</li>
+                            <li><strong>CE:</strong> ∃ DTM M such that L = L(M)</li>
+                        </ul>
+
+                        <h4>Language Operations:</h4>
+                        <ul style="line-height: 2;">
+                            <li><strong>Union:</strong> L₁ ∪ L₂ = {w | w ∈ L₁ or w ∈ L₂}</li>
+                            <li><strong>Concatenation:</strong> L₁ · L₂ = {w₁w₂ | w₁ ∈ L₁, w₂ ∈ L₂}</li>
+                            <li><strong>Kleene Star:</strong> L* = {w₁w₂...wₖ | k ≥ 0, each wᵢ ∈ L}</li>
+                        </ul>
+
+                        <h4>Proof Templates:</h4>
+                        <ul style="line-height: 2;">
+                            <li><strong>Undecidability:</strong> Assume decidable → construct contradiction → use reduction</li>
+                            <li><strong>DTM Construction:</strong> Define states → define transitions → verify correctness</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="exam-connection">
+                    <h3>🎯 Final Exam Tips</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0;">
+                        <div style="background: #27ae60; color: white; padding: 20px; border-radius: 10px;">
+                            <h4>✅ Do This</h4>
+                            <ul>
+                                <li>Read questions carefully</li>
+                                <li>Draw state diagrams for DTMs</li>
+                                <li>Check your DTM on sample inputs</li>
+                                <li>Use formal notation correctly</li>
+                                <li>Show all steps in proofs</li>
+                            </ul>
+                        </div>
+                        <div style="background: #e74c3c; color: white; padding: 20px; border-radius: 10px;">
+                            <h4>❌ Avoid This</h4>
+                            <ul>
+                                <li>Leaving answers blank</li>
+                                <li>Making assumptions not stated</li>
+                                <li>Writing illegibly</li>
+                                <li>Ignoring edge cases</li>
+                                <li>Panicking! Take deep breaths.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="script.js"></script>
+</body>
+</html>
