@@ -1245,7 +1245,46 @@ function displayUserRules() {
     for (const state in userTMTransitions) {
         for (const readSymbol in userTMTransitions[state]) {
             const rule = userTMTransitions[state][readSymbol];
-            listDiv.innerHTML += `<div>δ(${state}, ${readSymbol === TM_BLANK ? '⊔' : readSymbol}) = (${rule.nextState}, ${rule.write === TM_BLANK ? '⊔' : rule.write}, ${rule.move})</div>`;
+            const ruleDiv = document.createElement('div');
+            ruleDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin: 5px 0; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 5px;';
+            
+            const ruleText = document.createElement('span');
+            ruleText.textContent = `δ(${state}, ${readSymbol === TM_BLANK ? '⊔' : readSymbol}) = (${rule.nextState}, ${rule.write === TM_BLANK ? '⊔' : rule.write}, ${rule.move})`;
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = '×';
+            deleteBtn.style.cssText = 'background: #e74c3c; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 16px; margin-left: 10px;';
+            deleteBtn.title = 'Remove this rule';
+            deleteBtn.onclick = () => removeTransitionRule(state, readSymbol);
+            
+            ruleDiv.appendChild(ruleText);
+            ruleDiv.appendChild(deleteBtn);
+            listDiv.appendChild(ruleDiv);
+        }
+    }
+}
+
+function removeTransitionRule(state, readSymbol) {
+    // Remove the specific transition rule
+    if (userTMTransitions[state] && userTMTransitions[state][readSymbol]) {
+        delete userTMTransitions[state][readSymbol];
+        
+        // If this state has no more transitions, remove the state entirely
+        if (Object.keys(userTMTransitions[state]).length === 0) {
+            delete userTMTransitions[state];
+        }
+        
+        // Update currentTM if it's the user TM
+        if (currentTM && currentTM.description && currentTM.description.startsWith("User")) {
+            currentTM.delta = userTMTransitions;
+        }
+        
+        // Refresh display
+        displayUserRules();
+        
+        // Also refresh the main TM rules display if currently showing user TM
+        if (currentTM && currentTM.description && currentTM.description.startsWith("User")) {
+            displayCurrentTMRules();
         }
     }
 }
@@ -1511,6 +1550,7 @@ window.runInteractiveTM = runInteractiveTM;
 window.resetInteractiveTM = resetInteractiveTM;
 window.showTransitionTable = showTransitionTable;
 window.addTransitionRule = addTransitionRule;
+window.removeTransitionRule = removeTransitionRule;
 window.clearDesigner = clearDesigner;
 window.testUserTM = testUserTM;
 window.answerSelfTest = answerSelfTest;
