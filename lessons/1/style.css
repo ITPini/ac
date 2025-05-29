@@ -494,6 +494,65 @@ body {
     transform: translateY(-2px);
 }
 
+/* TM Designer Rules Styling */
+#userRulesList {
+    font-family: monospace;
+    background: rgba(52, 73, 94, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    color: #ecf0f1;
+    min-height: 100px;
+}
+
+#userRulesList > div {
+    background: rgba(52, 152, 219, 0.2) !important;
+    border: 1px solid rgba(52, 152, 219, 0.4);
+    color: #ecf0f1 !important;
+    margin: 8px 0 !important;
+    padding: 12px !important;
+    border-radius: 6px !important;
+}
+
+#userRulesList > div:hover {
+    background: rgba(52, 152, 219, 0.3) !important;
+}
+
+#userRulesList button {
+    background: #e74c3c !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 25px !important;
+    height: 25px !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    margin-left: 10px !important;
+    transition: all 0.3s ease !important;
+}
+
+#userRulesList button:hover {
+    background: #c0392b !important;
+    transform: scale(1.1) !important;
+}
+
+/* Rules display in main TM visualizer */
+#rulesList {
+    font-family: monospace;
+    background: rgba(52, 73, 94, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    color: #ecf0f1;
+}
+
+#rulesList > div {
+    background: rgba(52, 152, 219, 0.2);
+    border: 1px solid rgba(52, 152, 219, 0.4);
+    color: #ecf0f1;
+    margin: 5px 0;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
 @media (max-width: 768px) {
     .lesson-container {
         flex-direction: column;
