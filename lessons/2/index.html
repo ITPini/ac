@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2: Church-Turing Thesis & Advanced TM Variants</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <link rel="stylesheet" href="../../css/global-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>🎓 Algorithms & Computability: The Church-Turing Thesis</h1>
+        <p>Interactive Learning Experience - Lesson 2/13</p>
+    </div>
+
+    <div class="progress-container">
+        <span>Learning Progress:</span>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <span id="progressText">0%</span>
+    </div>
+
+    <div class="lesson-container">
+        <nav class="sidebar">
+            <h3>📚 Learning Path</h3>
+            <ul>
+                <li><a href="#" onclick="showSection('church-turing')" data-section="church-turing">1. Church-Turing Thesis</a></li>
+                <li><a href="#" onclick="showSection('historical-context')" data-section="historical-context">2. Historical Context</a></li>
+                <li><a href="#" onclick="showSection('multi-tape')" data-section="multi-tape">3. Multi-tape DTMs</a></li>
+                <li><a href="#" onclick="showSection('simulation-proof')" data-section="simulation-proof">4. Simulation Proof</a></li>
+                <li><a href="#" onclick="showSection('nondeterministic')" data-section="nondeterministic">5. Nondeterministic TMs</a></li>
+                <li><a href="#" onclick="showSection('ntm-simulation')" data-section="ntm-simulation">6. NTM Simulation</a></li>
+                <li><a href="#" onclick="showSection('robustness')" data-section="robustness">7. Robustness</a></li>
+                <li><a href="#" onclick="showSection('practice-problems')" data-section="practice-problems">8. Practice Problems</a></li>
+                <li><a href="#" onclick="showSection('exam-connection')" data-section="exam-connection">9. Exam Preparation</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <!-- Church-Turing Thesis Section -->
+            <section id="church-turing" class="section active">
+                <h2>🧠 The Church-Turing Thesis</h2>
+                
+                <div class="concept-card">
+                    <h3>Central Claim</h3>
+                    <p><strong>Everything that can be computed can be computed by a Turing machine.</strong></p>
+                    <p>This is not a theorem but a <em>thesis</em> - a fundamental assumption about the nature of computation itself.</p>
+                </div>
+
+                <div class="definition-box">
+                    <h4>💡 Why is this Important?</h4>
+                    <p>The Church-Turing Thesis establishes Turing machines as the definitive model of computation. If something cannot be computed by a Turing machine, it cannot be computed by any reasonable computational model.</p>
+                    <p>This means that despite technological advances—quantum computers, neural networks, parallel processing—none can solve problems that are fundamentally uncomputable for Turing machines.</p>
+                </div>
+
+                <div class="interactive-element">
+                    <h4>🤔 Computational Equivalence Explorer</h4>
+                    <p>Consider these powerful computational models and see how they relate to Turing machines:</p>
+                    
+                    <div class="language-operations">
+                        <div class="operation-card" onclick="showComputationalModel('modern')">
+                            <h5>🖥️ Modern Computers</h5>
+                            <p>Multi-core processors, vast memory, parallel computing</p>
+                            <small>Click to explore equivalence</small>
+                        </div>
+                        <div class="operation-card" onclick="showComputationalModel('quantum')">
+                            <h5>⚛️ Quantum Computers</h5>
+                            <p>Quantum superposition, entanglement, quantum algorithms</p>
+                            <small>Click to explore equivalence</small>
+                        </div>
+                        <div class="operation-card" onclick="showComputationalModel('neural')">
+                            <h5>🧠 Neural Networks</h5>
+                            <p>Deep learning, artificial intelligence, massive parallelism</p>
+                            <small>Click to explore equivalence</small>
+                        </div>
+                        <div class="operation-card" onclick="showComputationalModel('dna')">
+                            <h5>🧬 DNA Computing</h5>
+                            <p>Biological computation, molecular algorithms</p>
+                            <small>Click to explore equivalence</small>
+                        </div>
+                    </div>
+
+                    <div id="modelExplanation" class="example-box" style="display: none;">
+                        <h4 id="modelTitle">Computational Model</h4>
+                        <div id="modelContent"></div>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which statement best captures the essence of the Church-Turing Thesis?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="ct-quiz1" /> It's a proven mathematical theorem about computation limits
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="ct-quiz1" /> It's a thesis claiming Turing machines capture all effective computation
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="ct-quiz1" /> It only applies to digital computers, not biological systems
+                    </label>
+                    <div class="feedback correct">✅ Correct! The Church-Turing Thesis is a fundamental assumption that Turing machines represent the ultimate model of what can be computed effectively.</div>
+                    <div class="feedback incorrect">❌ Remember, it's a thesis (not a theorem) that makes a bold claim about the nature of all computation, regardless of the physical substrate.</div>
+                </div>
+            </section>
+
+            <!-- Historical Context Section -->
+            <section id="historical-context" class="section">
+                <h2>📜 Historical Context: The Entscheidungsproblem</h2>
+
+                <div class="example-box">
+                    <h3>The Question That Started It All</h3>
+                    <p><strong>Entscheidungsproblem (1928)</strong> - Hilbert and Ackermann posed the fundamental question:</p>
+                    <blockquote style="font-style: italic; margin: 20px; padding: 20px; background: rgba(0,0,0,0.1); border-left: 4px solid #3498db;">
+                        "Is there an algorithm that can determine whether any given statement in predicate logic is universally valid?"
+                    </blockquote>
+                    <p>In our formal language: Is the set {φ | φ is a valid logical formula} computable?</p>
+                </div>
+
+                <div class="step-by-step">
+                    <h4>Three Independent Solutions Emerge (1930s)</h4>
+                    <div class="step">
+                        <h5>Gödel (1933): μ-recursive functions</h5>
+                        <p>Mathematical functions defined through primitive recursion and minimization. Gödel showed that these functions precisely capture what we intuitively think of as "computable functions."</p>
+                        <div class="interactive-element">
+                            <p><strong>Example μ-recursive function:</strong></p>
+                            <p style="font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                                factorial(n) = if n = 0 then 1 else n × factorial(n-1)
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <h5>Church (1936): λ-calculus</h5>
+                        <p>A formal system for expressing computation through function abstraction and application. Every computable function can be represented as a λ-expression.</p>
+                        <div class="interactive-element">
+                            <p><strong>Example λ-calculus expression:</strong></p>
+                            <p style="font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                                (λx. x × x) → square function<br>
+                                (λx. λy. x + y) → addition function
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <h5>Turing (1936): Turing machines</h5>
+                        <p>Abstract machines that manipulate symbols on infinite tape according to transition rules. The most intuitive model for understanding algorithmic computation.</p>
+                        <div class="interactive-element">
+                            <p><strong>Example Turing machine program:</strong></p>
+                            <p style="font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                                δ(q₀, 0) = (q₀, 1, R)  // Replace 0 with 1, move right<br>
+                                δ(q₀, 1) = (q₀, 0, R)  // Replace 1 with 0, move right<br>
+                                δ(q₀, ⊔) = (halt, ⊔, S) // Stop at blank
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card">
+                    <h3>🎯 The Remarkable Discovery</h3>
+                    <p><strong>All three formalizations compute exactly the same class of functions!</strong></p>
+                    <p>This convergence suggested that they had captured something fundamental about the nature of computation itself - leading to the Church-Turing Thesis.</p>
+                </div>
+
+                <div class="interactive-element">
+                    <h4>🔧 Equivalence Demonstration</h4>
+                    <p>Let's see how the same computation can be expressed in different models:</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                        <div>
+                            <h5>Turing Machine (Increment)</h5>
+                            <div style="background: #e8f4fd; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.9em;">
+                                δ(q₀, 1) = (q₀, 1, R)<br>
+                                δ(q₀, 0) = (q₁, 1, L)<br>
+                                δ(q₁, 1) = (q₁, 1, L)<br>
+                                δ(q₁, ⊔) = (halt, ⊔, R)
+                            </div>
+                        </div>
+                        <div>
+                            <h5>λ-calculus (Increment)</h5>
+                            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.9em;">
+                                λn. λf. λx. f ((n f) x)<br>
+                                <small>// Church numeral successor</small>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="demonstrateEquivalence()" class="btn btn-primary">Show Step-by-Step Equivalence</button>
+                    <div id="equivalenceDemo" style="display: none; margin-top: 15px;">
+                        <p>Both models compute the same function: adding 1 to a binary number. The Turing machine does it by manipulating symbols on tape, while λ-calculus does it through function composition, but the result is identical.</p>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What was the ultimate answer to Hilbert's Entscheidungsproblem?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="entsch-quiz" /> Yes, there is such an algorithm
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="entsch-quiz" /> No, the problem is undecidable
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="entsch-quiz" /> It depends on the specific logical system used
+                    </label>
+                    <div class="feedback correct">✅ Correct! Church and Turing independently proved that the Entscheidungsproblem is undecidable.</div>
+                    <div class="feedback incorrect">❌ The Entscheidungsproblem was proven undecidable, which was a foundational result in computability theory.</div>
+                </div>
+            </section>
+
+            <!-- Multi-tape DTMs Section -->
+            <section id="multi-tape" class="section">
+                <h2>🎞️ Multi-tape Deterministic Turing Machines</h2>
+
+                <div class="concept-card">
+                    <h3>🎯 Why Multiple Tapes?</h3>
+                    <p>While single-tape DTMs are theoretically sufficient, multi-tape machines often provide more natural and efficient solutions to complex problems. They help us think about algorithms more intuitively while maintaining the same computational power.</p>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Formal Definition: k-tape DTM</h3>
+                    <p>A k-tape DTM is a tuple M = (Q, Σ, Γ, s, t, r, δ) where:</p>
+                    <ul style="line-height: 1.8;">
+                        <li><strong>Q, Σ, Γ, s, t, r:</strong> Same as single-tape DTM</li>
+                        <li><strong>δ:</strong> (Q \ {t,r}) × Γᵏ → Q × Γᵏ × {-1,0,+1}ᵏ</li>
+                    </ul>
+                    <p>The key difference: δ reads k symbols (one from each tape) and writes k symbols while moving each head independently.</p>
+                </div>
+
+                <div class="interactive-element">
+                    <h4>🔧 Multi-tape TM Visualizer</h4>
+                    <p>Let's build a 2-tape DTM for the language L = {ww | w ∈ {0,1}*} (strings that are concatenations of identical substrings):</p>
+                    
+                    <div class="tm-visualizer">
+                        <h5>2-Tape DTM: String Duplication Checker</h5>
+                        <div style="margin: 20px 0;">
+                            <label>Input: </label>
+                            <input type="text" id="multiTapeInput" value="0101" placeholder="Enter string like '0101'" style="padding: 8px; margin: 0 10px; border-radius: 5px; border: 1px solid #ccc;">
+                            <button onclick="loadMultiTape()" class="btn btn-success">Load</button>
+                        </div>
+
+                        <div id="tape1Container">
+                            <h6>Tape 1 (Input):</h6>
+                            <div id="tape1" class="tape-container"></div>
+                        </div>
+                        
+                        <div id="tape2Container" style="margin-top: 15px;">
+                            <h6>Tape 2 (Copy):</h6>
+                            <div id="tape2" class="tape-container"></div>
+                        </div>
+
+                        <div class="state-display">
+                            State: <span id="multiTapeState">q₀</span> |
+                            Step: <span id="multiTapeStep">0</span> |
+                            Status: <span id="multiTapeStatus">Ready</span>
+                        </div>
+
+                        <div class="controls">
+                            <button onclick="stepMultiTape()" class="btn btn-primary" id="multiStepBtn">Step</button>
+                            <button onclick="runMultiTape()" class="btn btn-success" id="multiRunBtn">Run</button>
+                            <button onclick="resetMultiTape()" class="btn btn-danger">Reset</button>
+                        </div>
+
+                        <div id="multiTapeLog" style="margin-top: 15px; max-height: 200px; overflow-y: auto; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                            <h6>Algorithm Steps:</h6>
+                            <div id="multiTapeLogContent" style="font-family: monospace; font-size: 0.9em;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-by-step">
+                    <h4>Algorithm for L = {ww | w ∈ {0,1}*}</h4>
+                    <div class="step">
+                        <h5>Phase 1: Copy First Half</h5>
+                        <p>Copy symbols from tape 1 to tape 2 until we've processed half the input. This requires knowing the total length or using a two-pass approach.</p>
+                    </div>
+                    <div class="step">
+                        <h5>Phase 2: Compare</h5>
+                        <p>Compare the remaining symbols on tape 1 with the copied symbols on tape 2. If they match exactly, accept; otherwise, reject.</p>
+                    </div>
+                    <div class="step">
+                        <h5>Phase 3: Verification</h5>
+                        <p>Ensure we've consumed all input and both halves are identical in length.</p>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What's the main advantage of multi-tape DTMs over single-tape DTMs?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="multitape-quiz" /> They can solve problems that single-tape DTMs cannot
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="multitape-quiz" /> They often provide more natural and efficient algorithms
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="multitape-quiz" /> They can process infinite inputs
+                    </label>
+                    <div class="feedback correct">✅ Exactly! Multi-tape DTMs don't increase computational power but make algorithms more intuitive and often more efficient.</div>
+                    <div class="feedback incorrect">❌ Multi-tape and single-tape DTMs have the same computational power - the advantage is in algorithm design and efficiency.</div>
+                </div>
+            </section>
+
+            <!-- Simulation Proof Section -->
+            <section id="simulation-proof" class="section">
+                <h2>🔄 Simulation Proof: Multi-tape → Single-tape</h2>
+
+                <div class="concept-card">
+                    <h3>🎯 The Equivalence Theorem</h3>
+                    <p><strong>Theorem:</strong> For every k-tape DTM M, there exists a single-tape DTM M' that outcome-simulates M.</p>
+                    <p>This means multi-tape DTMs don't give us more computational power - they're just more convenient to design.</p>
+                </div>
+
+                <div class="interactive-element">
+                    <h4>🔧 Step-by-Step Simulation Construction</h4>
+                    <p>Watch how we transform a 2-tape DTM into an equivalent single-tape DTM:</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <button onclick="showSimulationStep(1)" class="btn btn-primary" style="margin: 5px;">Step 1: Tape Layout</button>
+                        <button onclick="showSimulationStep(2)" class="btn btn-primary" style="margin: 5px;">Step 2: Head Tracking</button>
+                        <button onclick="showSimulationStep(3)" class="btn btn-primary" style="margin: 5px;">Step 3: Simulation Loop</button>
+                        <button onclick="showSimulationStep(4)" class="btn btn-primary" style="margin: 5px;">Step 4: Complexity</button>
+                    </div>
+
+                    <div id="simulationVisualization" class="tm-visualizer" style="display: none;">
+                        <h5 id="simStepTitle">Simulation Step</h5>
+                        <div id="simStepContent"></div>
+                        <div id="simTapeDisplay" class="tape-container" style="margin: 20px 0;"></div>
+                        <div id="simExplanation" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-top: 15px;"></div>
+                    </div>
+                </div>
+
+                <div class="step-by-step">
+                    <h4>Simulation Algorithm Overview</h4>
+                    <div class="step">
+                        <h5>Tape Format Design</h5>
+                        <p>Store multiple tapes on a single tape using a special format. For a k-tape machine, we interleave the contents and mark head positions with special symbols.</p>
+                        <div class="example-box">
+                            <p><strong>Example:</strong> 2-tape configuration [a,b,c] and [x,y,z] with heads at positions 2 and 1 becomes:</p>
+                            <p style="font-family: monospace; text-align: center; font-size: 1.1em;">
+                                # a b̂ c # x ŷ z #
+                            </p>
+                            <p><small>The hat (^) marks head positions, # separates tapes</small></p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <h5>State Expansion</h5>
+                        <p>The single-tape machine needs states to remember which phase of simulation it's in: reading the current symbols, applying the transition, or updating the tape configuration.</p>
+                    </div>
+                    <div class="step">
+                        <h5>Simulation Phases</h5>
+                        <p>Each step of the k-tape machine requires multiple steps of the single-tape machine:</p>
+                        <ol style="margin-left: 20px;">
+                            <li>Scan tape to find all head positions and read current symbols</li>
+                            <li>Determine the k-tape transition to apply</li>
+                            <li>Scan tape again to update symbols and move heads</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Time Complexity Impact</h3>
+                    <p><strong>Important:</strong> While the languages accepted are the same, there's a time complexity cost for simulation.</p>
+                    <p>If the k-tape machine runs in time T(n), the simulating single-tape machine runs in time O(T(n)²). This quadratic slowdown is the price we pay for the simulation.</p>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">In the simulation of a k-tape DTM by a single-tape DTM, what causes the quadratic time overhead?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="simulation-quiz" /> The need to store more information
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="simulation-quiz" /> The need to scan the entire tape for each simulated step
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="simulation-quiz" /> The complexity of the transition function
+                    </label>
+                    <div class="feedback correct">✅ Correct! Each k-tape step requires scanning the entire single tape to find head positions and update them.</div>
+                    <div class="feedback incorrect">❌ The overhead comes from the need to scan the tape multiple times for each simulated step to track multiple head positions.</div>
+                </div>
+            </section>
+
+            <!-- Nondeterministic TMs Section -->
+            <section id="nondeterministic" class="section">
+                <h2>🌳 Nondeterministic Turing Machines</h2>
+
+                <div class="concept-card">
+                    <h3>🎯 The Power of Choice</h3>
+                    <p>Nondeterministic Turing Machines (NTMs) can make multiple choices at each step, exploring all possible computation paths simultaneously. This gives them a different way to accept languages, even though they don't increase computational power.</p>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Formal Definition: NTM</h3>
+                    <p>An NTM has the same components as a DTM, except:</p>
+                    <p><strong>δ:</strong> (Q \ {t,r}) × Γ → 2^(Q × Γ × {-1,0,+1})</p>
+                    <p>The transition function now maps to a <strong>set</strong> of possible transitions, not just one.</p>
+                </div>
+
+                <div class="interactive-element">
+                    <h4>🔧 NTM Computation Tree Visualizer</h4>
+                    <p>Let's trace an NTM that accepts strings containing the pattern "101":</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <label>Input String: </label>
+                        <input type="text" id="ntmInput" value="1011" placeholder="Enter binary string" style="padding: 8px; margin: 0 10px; border-radius: 5px; border: 1px solid #ccc;">
+                        <button onclick="buildNTMTree()" class="btn btn-success">Build Computation Tree</button>
+                        <button onclick="stepNTMTree()" class="btn btn-primary" id="ntmStepBtn" disabled>Next Level</button>
+                        <button onclick="resetNTMTree()" class="btn btn-danger">Reset</button>
+                    </div>
+
+                    <div id="ntmTreeContainer" style="margin: 20px 0; min-height: 300px;">
+                        <canvas id="ntmTreeCanvas" width="800" height="400" style="border: 1px solid #ccc; border-radius: 8px; background: white; width: 100%; max-width: 800px;"></canvas>
+                    </div>
+
+                    <div id="ntmExplanation" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-top: 15px; display: none;">
+                        <h6>NTM Transitions:</h6>
+                        <div id="ntmTransitions" style="font-family: monospace; font-size: 0.9em;"></div>
+                    </div>
+                </div>
+
+                <div class="step-by-step">
+                    <h4>NTM for Pattern "101"</h4>
+                    <div class="step">
+                        <h5>State q₀ (Initial/Scanning)</h5>
+                        <p>The machine has two choices when reading any symbol:</p>
+                        <ul>
+                            <li>Stay in q₀ and keep scanning (ignoring the symbol)</li>
+                            <li>If the symbol is '1', guess that the pattern starts here and go to q₁</li>
+                        </ul>
+                    </div>
+                    <div class="step">
+                        <h5>State q₁ (Expecting '0')</h5>
+                        <p>After guessing the pattern started, we must see '0' to continue to q₂, otherwise this branch rejects.</p>
+                    </div>
+                    <div class="step">
+                        <h5>State q₂ (Expecting final '1')</h5>
+                        <p>We must see '1' to complete the pattern "101" and move to the accept state.</p>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Acceptance in NTMs</h3>
+                    <p><strong>An NTM accepts an input if at least one computation path leads to an accepting state.</strong></p>
+                    <p>This is different from DTMs where there's only one computation path. The NTM explores all possible paths simultaneously through nondeterminism.</p>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">When does a nondeterministic Turing machine accept an input string?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="ntm-accept-quiz" /> When all computation paths lead to acceptance
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="ntm-accept-quiz" /> When at least one computation path leads to acceptance
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="ntm-accept-quiz" /> When more accepting paths exist than rejecting paths
+                    </label>
+                    <div class="feedback correct">✅ Correct! An NTM accepts if there exists at least one accepting computation path - it's an existential condition.</div>
+                    <div class="feedback incorrect">❌ NTM acceptance is existential: if any path accepts, the whole computation accepts, regardless of other paths.</div>
+                </div>
+            </section>
+
+            <!-- NTM Simulation Section -->
+            <section id="ntm-simulation" class="section">
+                <h2>🔄 Simulating Nondeterminism with Determinism</h2>
+
+                <div class="concept-card">
+                    <h3>🎯 The Simulation Theorem</h3>
+                    <p><strong>Theorem:</strong> For every NTM M, there exists a DTM M' that outcome-simulates M.</p>
+                    <p>This means nondeterminism doesn't increase computational power - it's another form of convenience, like multi-tape machines.</p>
+                </div>
+
+                <div class="interactive-element">
+                    <h4>🔧 Breadth-First Search Simulation</h4>
+                    <p>Watch how a DTM systematically explores all possible NTM computation paths:</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <label>NTM Input: </label>
+                        <input type="text" id="ntmSimInput" value="101" placeholder="Binary string" style="padding: 8px; margin: 0 10px; border-radius: 5px; border: 1px solid #ccc;">
+                        <button onclick="startNTMSimulation()" class="btn btn-success">Start Simulation</button>
+                        <button onclick="stepNTMSimulation()" class="btn btn-primary" id="ntmSimStepBtn" disabled>Next Generation</button>
+                        <button onclick="resetNTMSimulation()" class="btn btn-danger">Reset</button>
+                    </div>
+
+                    <div id="ntmSimVisualization" class="tm-visualizer" style="display: none;">
+                        <h5>DTM Simulating NTM - Breadth-First Exploration</h5>
+                        <div id="currentGeneration" style="margin: 20px 0;">
+                            <h6>Current Generation (Level <span id="generationLevel">0</span>):</h6>
+                            <div id="configurationsList" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; font-family: monospace; max-height: 200px; overflow-y: auto;"></div>
+                        </div>
+                        <div class="state-display">
+                            Configurations: <span id="configCount">1</span> |
+                            Depth: <span id="searchDepth">0</span> |
+                            Status: <span id="simStatus">Running</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-by-step">
+                    <h4>Simulation Algorithm</h4>
+                    <div class="step">
+                        <h5>Initialize Configuration Set</h5>
+                        <p>Start with Γ₀ = {initial configuration of NTM on input w}. This represents all possible starting points (just one initially).</p>
+                    </div>
+                    <div class="step">
+                        <h5>Generate Next Level</h5>
+                        <p>For each configuration in Γᵢ, apply all possible NTM transitions to create Γᵢ₊₁. This simulates one step of nondeterministic computation.</p>
+                    </div>
+                    <div class="step">
+                        <h5>Check for Acceptance</h5>
+                        <p>If any configuration in Γᵢ is accepting, the DTM accepts. If Γᵢ is empty (all paths rejected), the DTM rejects.</p>
+                    </div>
+                    <div class="step">
+                        <h5>Repeat</h5>
+                        <p>Continue until acceptance, rejection, or we detect that the simulation will run forever (this requires careful analysis).</p>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>Why This Works</h3>
+                    <p>The DTM systematically explores the entire computation tree of the NTM using breadth-first search. This ensures that:</p>
+                    <ul style="line-height: 1.8;">
+                        <li>If the NTM has an accepting computation path, the DTM will find it</li>
+                        <li>If the NTM has no accepting paths, the DTM will determine this</li>
+                        <li>The simulation preserves the acceptance behavior exactly</li>
+                    </ul>
+                </div>
+
+                <div class="example-box">
+                    <h4>Time Complexity Explosion</h4>
+                    <p>While NTMs don't increase computational power, simulating them has a severe time cost:</p>
+                    <ul>
+                        <li><strong>NTM time:</strong> T(n)</li>
+                        <li><strong>DTM simulation time:</strong> O(b^T(n)) where b is the maximum branching factor</li>
+                    </ul>
+                    <p>This exponential blowup is why P vs NP is such an important question - we don't know if this simulation overhead is necessary.</p>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What search strategy does the standard DTM simulation of an NTM use?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="ntm-sim-quiz" /> Depth-first search
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="ntm-sim-quiz" /> Breadth-first search
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="ntm-sim-quiz" /> Random search
+                    </label>
+                    <div class="feedback correct">✅ Correct! Breadth-first search ensures we find accepting paths without getting stuck in infinite branches.</div>
+                    <div class="feedback incorrect">❌ Breadth-first search is essential to avoid getting trapped in infinite computation paths while still finding accepting ones.</div>
+                </div>
+            </section>
+
+            <!-- Robustness Section -->
+            <section id="robustness" class="section">
+                <h2>💪 Robustness of Turing Machines</h2>
+
+                <div class="concept-card">
+                    <h3>🎯 What Makes a Model Robust?</h3>
+                    <p>A computational model is <strong>robust</strong> if reasonable extensions or modifications don't increase its computational power. Turing machines are remarkably robust!</p>
+                </div>
+
+                <div class="interactive-element">
+                    <h4>🔧 Robustness Explorer</h4>
+                    <p>Click on different TM extensions to see how they relate to standard DTMs:</p>
+                    
+                    <div class="language-operations">
+                        <div class="operation-card" onclick="showRobustnessExample('stay')">
+                            <h5>📍 "Stay" Direction</h5>
+                            <p>Adding a third direction: Left, Right, Stay</p>
+                            <small>From Tutorial Exercise 1</small>
+                        </div>
+                        <div class="operation-card" onclick="showRobustnessExample('doubly-infinite')">
+                            <h5>↔️ Doubly-Infinite Tape</h5>
+                            <p>Tape extends infinitely in both directions</p>
+                            <small>From Tutorial Exercise 2</small>
+                        </div>
+                        <div class="operation-card" onclick="showRobustnessExample('multi-tape')">
+                            <h5>🎞️ Multiple Tapes</h5>
+                            <p>k independent tapes with k independent heads</p>
+                            <small>Already covered!</small>
+                        </div>
+                        <div class="operation-card" onclick="showRobustnessExample('nondeterministic')">
+                            <h5>🌳 Nondeterminism</h5>
+                            <p>Multiple possible transitions from each state</p>
+                            <small>Already covered!</small>
+                        </div>
+                    </div>
+
+                    <div id="robustnessDemo" class="example-box" style="display: none;">
+                        <h4 id="robustnessTitle">Robustness Example</h4>
+                        <div id="robustnessContent"></div>
+                        <div id="robustnessProof" style="margin-top: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px;"></div>
+                    </div>
+                </div>
+
+                <div class="step-by-step">
+                    <h4>Tutorial Exercise Solutions</h4>
+                    <div class="step">
+                        <h5>Adding "Stay" Direction (Exercise 1)</h5>
+                        <p><strong>Problem:</strong> Show that DTMs with transitions δ(q,a) = (q',b,0) can be simulated by standard DTMs.</p>
+                        <p><strong>Solution:</strong> Replace each "stay" transition with "right then left" or use auxiliary states to achieve the same effect without actually staying.</p>
+                        <div class="interactive-element">
+                            <button onclick="showStaySimulation()" class="btn btn-primary">Show Simulation Details</button>
+                            <div id="staySimulation" style="display: none; margin-top: 10px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px;">
+                                <p><strong>Construction:</strong> For each transition δ(q,a) = (q',b,0), create new states q'_R and simulate:</p>
+                                <p style="font-family: monospace;">
+                                    δ'(q,a) = (q'_R, b, +1)  // Write b, move right<br>
+                                    δ'(q'_R, c) = (q', c, -1) for all symbols c  // Move back left
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <h5>Doubly-Infinite Tape (Exercise 2)</h5>
+                        <p><strong>Problem:</strong> Show equivalence between DTMs with doubly-infinite tapes and standard (singly-infinite) tapes.</p>
+                        <p><strong>Key Insight:</strong> A doubly-infinite tape can be simulated by interleaving positive and negative positions on a singly-infinite tape.</p>
+                        <div class="interactive-element">
+                            <button onclick="showDoublyInfiniteSimulation()" class="btn btn-primary">Show Encoding Scheme</button>
+                            <div id="doublyInfiniteSimulation" style="display: none; margin-top: 10px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px;">
+                                <p><strong>Encoding:</strong> Map doubly-infinite positions to singly-infinite positions:</p>
+                                <p style="font-family: monospace;">
+                                    Position: ...-2, -1,  0,  1,  2,  3, ...<br>
+                                    Maps to:     4,  2,  1,  3,  5,  7, ...
+                                </p>
+                                <p>Negative positions → even addresses, non-negative → odd addresses</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>The Robustness Principle</h3>
+                    <p>All these extensions can be simulated by standard DTMs, proving that the basic DTM model captures the essence of computation. This robustness supports the Church-Turing Thesis - if such varied extensions don't increase power, the model likely captures all effective computation.</p>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What does the robustness of Turing machines tell us about the Church-Turing Thesis?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="robustness-quiz" /> It proves the thesis is correct
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="robustness-quiz" /> It provides strong evidence supporting the thesis
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="robustness-quiz" /> It shows the thesis is irrelevant
+                    </label>
+                    <div class="feedback correct">✅ Correct! The robustness provides compelling evidence that DTMs capture the essence of computation, supporting the Church-Turing Thesis.</div>
+                    <div class="feedback incorrect">❌ Robustness doesn't prove the thesis (which is unprovable), but it strongly supports the idea that DTMs capture all effective computation.</div>
+                </div>
+            </section>
+
+            <!-- Practice Problems Section -->
+            <section id="practice-problems" class="section">
+                <h2>📝 Practice Problems</h2>
+
+                <div class="concept-card">
+                    <h3>🎯 Tutorial-Based Exercises</h3>
+                    <p>These problems are directly based on Tutorial 2 from your course. Master these to excel on your exam!</p>
+                </div>
+
+                <!-- Problem 1: NTM Construction -->
+                <div class="interactive-element">
+                    <h4>🔧 Problem 1: Construct an NTM</h4>
+                    <p><strong>Challenge:</strong> Give an NTM for the language of words over {0,1} that contain the infix "110".</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <h5>Your NTM Design:</h5>
+                        <div id="ntmBuilder" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                            <div style="margin: 10px 0;">
+                                <label>States: </label>
+                                <input type="text" id="ntmStates" placeholder="e.g., q0, q1, q11" style="padding: 8px; width: 300px; border-radius: 5px; border: 1px solid #ccc;">
+                            </div>
+                            <div style="margin: 10px 0;">
+                                <label>Add Transition: </label>
+                                <select id="fromState" style="padding: 8px; margin: 0 5px;">
+                                    <option value="q0">q0</option>
+                                    <option value="q1">q1</option>
+                                    <option value="q11">q11</option>
+                                </select>
+                                <span>on</span>
+                                <select id="readSymbol" style="padding: 8px; margin: 0 5px;">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="⊔">⊔</option>
+                                </select>
+                                <span>→</span>
+                                <select id="toState" style="padding: 8px; margin: 0 5px;">
+                                    <option value="q0">q0</option>
+                                    <option value="q1">q1</option>
+                                    <option value="q11">q11</option>
+                                    <option value="accept">accept</option>
+                                    <option value="reject">reject</option>
+                                </select>
+                                <button onclick="addNTMTransition()" class="btn btn-success" style="margin-left: 10px;">Add</button>
+                            </div>
+                            <div id="ntmTransitionsList" style="margin: 15px 0; font-family: monospace; background: white; padding: 10px; border-radius: 5px; min-height: 100px;">
+                                <strong>Transitions:</strong><br>
+                                <div id="transitionEntries">None added yet</div>
+                            </div>
+                            <button onclick="testNTMDesign()" class="btn btn-primary">Test Your NTM</button>
+                            <button onclick="showNTMSolution()" class="btn" style="background: #9b59b6; color: white;">Show Solution</button>
+                        </div>
+                    </div>
+
+                    <div id="ntmTestResults" style="display: none; margin-top: 15px;">
+                        <h6>Test Results:</h6>
+                        <div id="ntmTestOutput" style="background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px; font-family: monospace;"></div>
+                    </div>
+
+                    <div id="ntmSolution" class="toggle-content">
+                        <div style="background: #2c3e50; color: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                            <h5>Solution: NTM for Infix "110"</h5>
+                            <p><strong>States:</strong> {q₀, q₁, q₁₁, accept, reject}</p>
+                            <p><strong>Strategy:</strong> Use nondeterminism to guess where "110" starts</p>
+                            <div style="font-family: monospace; margin: 15px 0;">
+                                δ(q₀, 0) = {(q₀, 0, R)}<br>
+                                δ(q₀, 1) = {(q₀, 1, R), (q₁, 1, R)}<br>
+                                δ(q₁, 1) = {(q₁₁, 1, R)}<br>
+                                δ(q₁, 0) = {(reject, 0, R)}<br>
+                                δ(q₁₁, 0) = {(accept, 0, R)}<br>
+                                δ(q₁₁, 1) = {(reject, 1, R)}
+                            </div>
+                            <p><strong>Key Insight:</strong> At each '1', nondeterministically choose to either continue scanning or guess that "110" starts here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Problem 2: Enumerators -->
+                <div class="interactive-element">
+                    <h4>🔧 Problem 2: Enumerators and CE Languages</h4>
+                    <p><strong>Challenge:</strong> Show that lexicographical enumerators generate exactly the computable languages.</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <h5>Interactive Proof Builder:</h5>
+                        <div class="step-by-step">
+                            <div class="step">
+                                <h6>Direction 1: Lexicographical Enumerator → Computable</h6>
+                                <p>Given a lexicographical enumerator E for language L, construct a halting DTM M:</p>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                                    <button onclick="showEnumeratorToTM()" class="btn btn-primary">Show Construction</button>
+                                    <div id="enumToTM" class="toggle-content">
+                                        <p style="font-family: monospace; margin: 10px 0;">
+                                            M on input w:<br>
+                                            1. Run E until it outputs a word w' with |w'| ≥ |w|<br>
+                                            2. If w' = w, accept<br>
+                                            3. If |w'| > |w|, reject (lexicographic ordering guarantees w won't appear later)
+                                        </p>
+                                        <p><strong>Why this works:</strong> Lexicographic ordering means if we've seen a word longer than w, we've passed w's position.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <h6>Direction 2: Computable → Lexicographical Enumerator</h6>
+                                <p>Given a halting DTM M for language L, construct a lexicographical enumerator E:</p>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                                    <button onclick="showTMToEnumerator()" class="btn btn-primary">Show Construction</button>
+                                    <div id="tmToEnum" class="toggle-content">
+                                        <p style="font-family: monospace; margin: 10px 0;">
+                                            E:<br>
+                                            1. w := ε<br>
+                                            2. Run M on w<br>
+                                            3. If M accepts w, output w<br>
+                                            4. w := next word in lexicographic order<br>
+                                            5. Goto step 2
+                                        </p>
+                                        <p><strong>Why this works:</strong> Since M halts on all inputs, we can systematically test each word.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Problem 3: Multi-tape Construction -->
+                <div class="interactive-element">
+                    <h4>🔧 Problem 3: Multi-tape DTM Construction</h4>
+                    <p><strong>Challenge:</strong> Design a 2-tape DTM for L = {aⁿbⁿa²ⁿ | n ≥ 1} (from Mock Exam!).</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <h5>Step-by-Step Design:</h5>
+                        <div class="step-by-step">
+                            <div class="step">
+                                <h6>Phase 1: Count and Copy a's</h6>
+                                <input type="text" id="phase1Strategy" placeholder="Describe your strategy for the first block of a's..." style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                            </div>
+                            <div class="step">
+                                <h6>Phase 2: Match b's</h6>
+                                <input type="text" id="phase2Strategy" placeholder="How will you verify n b's against tape 2?" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                            </div>
+                            <div class="step">
+                                <h6>Phase 3: Verify 2n a's</h6>
+                                <input type="text" id="phase3Strategy" placeholder="How will you check the final block has exactly 2n a's?" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                            </div>
+                        </div>
+                        <button onclick="checkMultiTapeDesign()" class="btn btn-primary">Check Your Design</button>
+                        <button onclick="showMultiTapeSolution()" class="btn" style="background: #9b59b6; color: white;">Show Solution</button>
+                        
+                        <div id="designFeedback" style="display: none; margin-top: 15px;"></div>
+                        
+                        <div id="multiTapeSolution" class="toggle-content">
+                            <div style="background: #2c3e50; color: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                                <h5>Solution: 2-tape DTM for L = {aⁿbⁿa²ⁿ | n ≥ 1}</h5>
+                                <p><strong>States:</strong> s, q₁, q₂, q₃, q₄, q₅, t, r</p>
+                                <div style="margin: 15px 0;">
+                                    <p><strong>Phase 1 (Copy a's):</strong></p>
+                                    <p>δ(s, (a,⊔)) = (q₁, (a,a), (+1,+1)) - Copy first a to tape 2</p>
+                                    <p>δ(q₁, (a,⊔)) = (q₁, (a,a), (+1,+1)) - Continue copying a's</p>
+                                    <p>δ(q₁, (b,⊔)) = (q₂, (b,⊔), (0,-1)) - Found b's, reset tape 2 head</p>
+                                </div>
+                                <div style="margin: 15px 0;">
+                                    <p><strong>Phase 2 (Match b's):</strong></p>
+                                    <p>δ(q₂, (b,a)) = (q₂, (b,⊔), (+1,-1)) - Match b with a from tape 2</p>
+                                    <p>δ(q₂, (a,⊔)) = (q₃, (a,⊔), (0,+1)) - All b's matched, start final phase</p>
+                                </div>
+                                <div style="margin: 15px 0;">
+                                    <p><strong>Phase 3 (Check 2n a's):</strong></p>
+                                    <p>Each remaining a should match with tape 2 twice (2n total)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">In the NTM for detecting infix "110", why do we use nondeterminism at state q₀?</div>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="practice-quiz" /> To handle different input sizes
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, true)">
+                        <input type="radio" name="practice-quiz" /> To guess where the pattern "110" begins
+                    </label>
+                    <label class="quiz-option" onclick="selectQuizOption(this, false)">
+                        <input type="radio" name="practice-quiz" /> To improve the time complexity
+                    </label>
+                    <div class="feedback correct">✅ Correct! Nondeterminism lets us simultaneously explore the possibility that "110" starts at each '1' we encounter.</div>
+                    <div class="feedback incorrect">❌ The nondeterminism is used to guess the starting position of the pattern we're looking for, exploring multiple possibilities in parallel.</div>
+                </div>
+            </section>
+
+            <!-- Exam Connection Section -->
+            <section id="exam-connection" class="section">
+                <h2>🎯 Exam Preparation & Mock Questions</h2>
+
+                <div class="concept-card">
+                    <h3>🎯 High-Impact Exam Topics</h3>
+                    <p>Based on your mock exam and lecture content, these are the most critical areas for Lesson 2 concepts. Focus your study time here!</p>
+                </div>
+
+                <div class="exam-connection">
+                    <h3>🔥 Mock Exam Question Analysis</h3>
+                    <div class="step-by-step">
+                        <div class="step">
+                            <h4>Multi-tape DTM Construction (Mock Q1 Type)</h4>
+                            <p><strong>Pattern:</strong> L = {aⁿbⁿa²ⁿ | n ∈ ℕ \ {0}}</p>
+                            <div class="example-box">
+                                <h5>🔧 Master Strategy Framework:</h5>
+                                <ol style="line-height: 1.8;">
+                                    <li><strong>Identify Phases:</strong> Break the language into distinct counting/matching phases</li>
+                                    <li><strong>Tape Assignment:</strong> Use tape 2 as a counter/storage for first phase</li>
+                                    <li><strong>State Design:</strong> Create states for each phase plus validation states</li>
+                                    <li><strong>Verification:</strong> Always verify complete input consumption</li>
+                                </ol>
+                                <button onclick="showMasterStrategy()" class="btn btn-primary">Show Detailed Exam Strategy</button>
+                                <div id="masterStrategy" class="toggle-content">
+                                    <div style="background: #2c3e50; color: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                                        <h6>Exam-Winning Multi-tape Strategy:</h6>
+                                        <p><strong>Step 1:</strong> Always start by identifying what each tape will store</p>
+                                        <p><strong>Step 2:</strong> Design states with clear phase separation (copy phase, match phase, verify phase)</p>
+                                        <p><strong>Step 3:</strong> Use "stay" direction liberally - it's allowed and makes designs cleaner</p>
+                                        <p><strong>Step 4:</strong> Include explicit verification that input is completely consumed</p>
+                                        <p><strong>Step 5:</strong> Test your design on edge cases: n=1, empty string, malformed input</p>
+                                        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 10px;">
+                                            <strong>Common Exam Mistakes to Avoid:</strong><br>
+                                            • Forgetting to reset tape heads between phases<br>
+                                            • Not handling the empty string case<br>
+                                            • Missing input validation<br>
+                                            • Unclear state naming
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <h4>NTM vs DTM Equivalence Questions</h4>
+                            <p><strong>Common Question:</strong> "Explain why NTMs don't increase computational power."</p>
+                            <div class="example-box">
+                                <h5>🔧 Perfect Answer Framework:</h5>
+                                <button onclick="showNTMEquivalenceAnswer()" class="btn btn-primary">Show Model Answer</button>
+                                <div id="ntmEquivalenceAnswer" class="toggle-content">
+                                    <div style="background: #2c3e50; color: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                                        <p><strong>Model Answer Structure:</strong></p>
+                                        <p>1. <strong>State the theorem:</strong> "For every NTM M, there exists a DTM M' that outcome-simulates M."</p>
+                                        <p>2. <strong>Explain the simulation:</strong> "The DTM uses breadth-first search to explore the computation tree of the NTM."</p>
+                                        <p>3. <strong>Key insight:</strong> "The DTM maintains sets of configurations Γᵢ representing all possible states after i steps."</p>
+                                        <p>4. <strong>Acceptance:</strong> "If any configuration in any Γᵢ is accepting, the DTM accepts."</p>
+                                        <p>5. <strong>Time complexity note:</strong> "While languages are the same, time complexity increases exponentially."</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-element">
+                    <h3>🔧 Exam Simulation: Timed Practice</h3>
+                    <p>Practice these Lesson 2 concepts under exam conditions:</p>
+
+                    <div id="examSimulation">
+                        <div style="text-align: center; margin: 20px 0;">
+                            <div style="font-size: 1.5em; margin: 10px 0;">
+                                Time Remaining: <span id="examTimer" style="color: #e74c3c; font-weight: bold;">12:00</span>
+                            </div>
+                            <button onclick="startLesson2Exam()" class="btn btn-success" id="startExamBtn">Start 12-minute Challenge</button>
+                            <button onclick="stopLesson2Exam()" class="btn btn-danger" id="stopExamBtn" style="display: none;">Stop</button>
+                        </div>
+
+                        <div id="examQuestions" style="display: none;">
+                            <div class="quiz-container">
+                                <div class="quiz-question">
+                                    <strong>Question 1 (4 points):</strong> Construct a 2-tape DTM that accepts L = {wᴿw | w ∈ {a,b}*} where wᴿ is the reverse of w. 
+                                    Give the formal definition including states, alphabet, and key transitions.
+                                </div>
+                                <textarea id="exam2Answer1" rows="8" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin: 10px 0;" placeholder="Your answer here..."></textarea>
+                            </div>
+
+                            <div class="quiz-container">
+                                <div class="quiz-question">
+                                    <strong>Question 2 (3 points):</strong> Explain why adding a "stay" direction to Turing machines doesn't increase computational power. 
+                                    Give a brief construction showing how to simulate "stay" moves.
+                                </div>
+                                <textarea id="exam2Answer2" rows="6" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin: 10px 0;" placeholder="Your answer here..."></textarea>
+                            </div>
+
+                            <div class="quiz-container">
+                                <div class="quiz-question">
+                                    <strong>Question 3 (3 points):</strong> Give an NTM that accepts strings over {0,1} containing at least two consecutive 1s. 
+                                    Explain how nondeterminism helps in this construction.
+                                </div>
+                                <textarea id="exam2Answer3" rows="6" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin: 10px 0;" placeholder="Your answer here..."></textarea>
+                            </div>
+
+                            <button onclick="submitLesson2Exam()" class="btn btn-primary">Submit Answers</button>
+                        </div>
+
+                        <div id="examResults" style="display: none;">
+                            <h3>📊 Exam Results</h3>
+                            <div id="examFeedback"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="definition-box">
+                    <h3>📚 Essential Formulas & Concepts for Exam</h3>
+                    <div class="example-box">
+                        <h4>Must-Know Definitions:</h4>
+                        <ul style="line-height: 2;">
+                            <li><strong>k-tape DTM:</strong> δ: (Q\{t,r}) × Γᵏ → Q × Γᵏ × {-1,0,+1}ᵏ</li>
+                            <li><strong>NTM:</strong> δ: (Q\{t,r}) × Γ → 2^(Q × Γ × {-1,0,+1})</li>
+                            <li><strong>NTM Acceptance:</strong> ∃ accepting path in computation tree</li>
+                            <li><strong>Church-Turing Thesis:</strong> TMs capture all effective computation</li>
+                        </ul>
+
+                        <h4>Key Theorems:</h4>
+                        <ul style="line-height: 2;">
+                            <li><strong>Multi-tape Simulation:</strong> k-tape DTM ≡ 1-tape DTM (quadratic slowdown)</li>
+                            <li><strong>NTM Simulation:</strong> NTM ≡ DTM (exponential slowdown)</li>
+                            <li><strong>Robustness:</strong> All reasonable TM extensions have same power</li>
+                        </ul>
+
+                        <h4>Exam Strategies:</h4>
+                        <ul style="line-height: 2;">
+                            <li><strong>Multi-tape Construction:</strong> Phase separation + tape assignment</li>
+                            <li><strong>NTM Design:</strong> Use nondeterminism to guess + verify</li>
+                            <li><strong>Simulation Proofs:</strong> Show explicit construction + correctness</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="exam-connection">
+                    <h3>🎯 Final Lesson 2 Exam Tips</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0;">
+                        <div style="background: #27ae60; color: white; padding: 20px; border-radius: 10px;">
+                            <h4>✅ Do This in Exams</h4>
+                            <ul>
+                                <li>Clearly separate multi-tape DTM phases</li>
+                                <li>Use descriptive state names (q_copy, q_match)</li>
+                                <li>Show explicit input validation</li>
+                                <li>Draw NTM computation trees for complex cases</li>
+                                <li>Always verify your constructions on small examples</li>
+                            </ul>
+                        </div>
+                        <div style="background: #e74c3c; color: white; padding: 20px; border-radius: 10px;">
+                            <h4>❌ Avoid These Mistakes</h4>
+                            <ul>
+                                <li>Confusing NTM acceptance (∃ path vs ∀ paths)</li>
+                                <li>Forgetting to handle empty string cases</li>
+                                <li>Mixing up simulation direction (NTM→DTM vs DTM→NTM)</li>
+                                <li>Not specifying tape head movements clearly</li>
+                                <li>Assuming robustness = increased power</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script defer src="../../js/global-script.js"></script>
+    <script defer src="script.js"></script>
+</body>
+</html>
