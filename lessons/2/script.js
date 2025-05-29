@@ -418,7 +418,7 @@ function showSimulationStep(step) {
                 <p>The single-tape DTM must keep track of where each original head was positioned.</p>
                 <p><strong>Method:</strong> Use hat notation (^) to mark current positions, scan tape to find all marked positions.</p>
             `,
-            tape: '# a b̂ c # x ŷ z # → # a b c # x ŷ z #',
+            tape: '# a b̂ c # x ŷ z # → # a b ĉ # x ŷ z #',
             explanation: `
                 <strong>Head Movement Simulation:</strong><br>
                 • To move head on virtual tape 1 right: find b̂, remove hat, add hat to next symbol (ĉ)<br>  
