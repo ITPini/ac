@@ -394,21 +394,46 @@
                     <h4>🔧 NTM Computation Tree Visualizer</h4>
                     <p>Let's trace an NTM that accepts strings containing the pattern "101":</p>
                     
-                    <div style="margin: 20px 0;">
-                        <label>Input String: </label>
-                        <input type="text" id="ntmInput" value="1011" placeholder="Enter binary string" style="padding: 8px; margin: 0 10px; border-radius: 5px; border: 1px solid #ccc;">
-                        <button onclick="buildNTMTree()" class="btn btn-success">Build Computation Tree</button>
-                        <button onclick="stepNTMTree()" class="btn btn-primary" id="ntmStepBtn" disabled>Next Level</button>
-                        <button onclick="resetNTMTree()" class="btn btn-danger">Reset</button>
+                    <div style="margin: 20px 0; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label style="font-weight: 600; color: #2c3e50;">Input String: </label>
+                            <input type="text" id="ntmInput" value="1011" placeholder="Enter binary string" 
+                                   style="padding: 10px 15px; border-radius: 8px; border: 2px solid #bdc3c7; font-family: 'Courier New', monospace; font-size: 14px; width: 150px; transition: all 0.3s; background: white;"
+                                   oninput="validateBinaryInput(this)"
+                                   onblur="this.style.borderColor='#bdc3c7'"
+                                   onfocus="this.style.borderColor='#3498db'; this.style.boxShadow='0 0 0 3px rgba(52, 152, 219, 0.1)'">
+                            <small id="inputValidation" style="color: #e74c3c; font-weight: 500; display: none;">Only 0s and 1s allowed</small>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="buildNTMTree()" class="btn btn-success" style="padding: 10px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s;">Build Computation Tree</button>
+                            <button onclick="stepNTMTree()" class="btn btn-primary" id="ntmStepBtn" disabled style="padding: 10px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s;">Next Level</button>
+                            <button onclick="resetNTMTree()" class="btn btn-danger" style="padding: 10px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s;">Reset</button>
+                        </div>
                     </div>
 
-                    <div id="ntmTreeContainer" style="margin: 20px 0; min-height: 300px;">
-                        <canvas id="ntmTreeCanvas" width="800" height="400" style="border: 1px solid #ccc; border-radius: 8px; background: white; width: 100%; max-width: 800px;"></canvas>
+                    <div id="ntmTreeContainer" style="margin: 20px 0; min-height: 400px; background: #f8f9fa; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div style="max-height: 600px; overflow-y: auto; overflow-x: auto; border-radius: 8px;">
+                            <canvas id="ntmTreeCanvas" width="800" height="400" style="border: 2px solid #e0e0e0; border-radius: 10px; background: white; display: block; margin: 0 auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: default;"></canvas>
+                        </div>
+                        <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.8); border-radius: 8px; border-left: 4px solid #3498db;">
+                            <small style="color: #7f8c8d; font-style: italic;">
+                                🎯 <strong>Tip:</strong> Each level shows all possible NTM configurations after that many steps. 
+                                Accepting paths (green) mean the string is accepted! Scroll to see deeper levels.
+                            </small>
+                        </div>
+                        <div id="ntmTreeStatus" style="margin-top: 10px; padding: 12px; background: rgba(236, 240, 241, 0.8); border-radius: 8px; display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div><strong>Current Level:</strong> <span id="treeCurrentLevel" style="color: #3498db; font-weight: bold;">0</span></div>
+                                <div><strong>Active Paths:</strong> <span id="treeActivePaths" style="color: #f39c12; font-weight: bold;">0</span></div>
+                                <div><strong>Accepting Paths:</strong> <span id="treeAcceptingPaths" style="color: #27ae60; font-weight: bold;">0</span></div>
+                                <div><strong>Status:</strong> <span id="treeStatus" style="color: #e74c3c; font-weight: bold;">Ready</span></div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div id="ntmExplanation" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-top: 15px; display: none;">
-                        <h6>NTM Transitions:</h6>
-                        <div id="ntmTransitions" style="font-family: monospace; font-size: 0.9em;"></div>
+                    <div id="ntmExplanation" style="background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(155, 89, 182, 0.1)); padding: 20px; border-radius: 12px; margin-top: 20px; display: none; border: 1px solid rgba(52, 152, 219, 0.2);">
+                        <h6 style="color: #2c3e50; margin-bottom: 15px; font-size: 16px; font-weight: 600;">🔧 NTM Transitions:</h6>
+                        <div id="ntmTransitions" style="font-family: 'Courier New', monospace; font-size: 13px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; line-height: 1.6; border-left: 4px solid #3498db;"></div>
                     </div>
                 </div>
 

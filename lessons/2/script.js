@@ -46,6 +46,35 @@ let examState = {
     interval: null
 };
 
+// === HELPER FUNCTIONS ===
+
+/**
+ * Validate binary input in real-time
+ */
+function validateBinaryInput(input) {
+    const value = input.value;
+    const validationEl = document.getElementById('inputValidation');
+    
+    // Check if input contains only 0s and 1s
+    const isValid = /^[01]*$/.test(value);
+    
+    if (!isValid && value.length > 0) {
+        input.style.borderColor = '#e74c3c';
+        input.style.boxShadow = '0 0 0 3px rgba(231, 76, 60, 0.1)';
+        if (validationEl) {
+            validationEl.style.display = 'inline';
+        }
+        // Remove invalid characters
+        input.value = value.replace(/[^01]/g, '');
+    } else {
+        input.style.borderColor = '#27ae60';
+        input.style.boxShadow = '0 0 0 3px rgba(39, 174, 96, 0.1)';
+        if (validationEl) {
+            validationEl.style.display = 'none';
+        }
+    }
+}
+
 // === INITIALIZATION ===
 
 /**
@@ -497,8 +526,152 @@ function initializeNTMTree() {
         // Set canvas size
         canvas.width = 800;
         canvas.height = 400;
+        
+        // Add mouse hover functionality
+        canvas.addEventListener('mousemove', handleCanvasHover);
+        canvas.addEventListener('mouseleave', clearCanvasHover);
     }
     resetNTMTree();
+}
+
+/**
+ * Handle mouse hover over canvas to show node details
+ */
+function handleCanvasHover(event) {
+    if (!ntmTreeState.canvas || !ntmTreeState.tree.length) return;
+    
+    const rect = ntmTreeState.canvas.getBoundingClientRect();
+    const mouseX = (event.clientX - rect.left) * (ntmTreeState.canvas.width / rect.width);
+    const mouseY = (event.clientY - rect.top) * (ntmTreeState.canvas.height / rect.height);
+    
+    const nodePositions = calculateNodePositions();
+    const levelHeight = 80;
+    const nodeRadius = 25;
+    const startY = 50;
+    
+    let hoveredNode = null;
+    
+    // Check if mouse is over any node
+    ntmTreeState.tree.forEach((level, levelIndex) => {
+        if (levelIndex > ntmTreeState.currentLevel) return;
+        
+        const y = startY + levelIndex * levelHeight;
+        
+        level.forEach((config, nodeIndex) => {
+            const x = nodePositions[levelIndex][nodeIndex];
+            const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+            
+            if (distance <= nodeRadius) {
+                hoveredNode = { config, x, y, levelIndex, nodeIndex };
+            }
+        });
+    });
+    
+    if (hoveredNode) {
+        ntmTreeState.canvas.style.cursor = 'pointer';
+        showNodeTooltip(hoveredNode);
+    } else {
+        ntmTreeState.canvas.style.cursor = 'default';
+        hideNodeTooltip();
+    }
+}
+
+/**
+ * Clear canvas hover effects
+ */
+function clearCanvasHover() {
+    if (ntmTreeState.canvas) {
+        ntmTreeState.canvas.style.cursor = 'default';
+    }
+    hideNodeTooltip();
+}
+
+/**
+ * Show tooltip for hovered node
+ */
+function showNodeTooltip(hoveredNode) {
+    let tooltip = document.getElementById('nodeTooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'nodeTooltip';
+        tooltip.style.cssText = `
+            position: fixed;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            z-index: 1000;
+            pointer-events: none;
+            max-width: 280px;
+            line-height: 1.5;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        `;
+        document.body.appendChild(tooltip);
+    }
+    
+    const config = hoveredNode.config;
+    const currentChar = config.position < ntmTreeState.input.length ? 
+                       ntmTreeState.input[config.position] : '⊔';
+    
+    tooltip.innerHTML = `
+        <div style="font-weight: bold; margin-bottom: 6px; color: #3498db;">Node Info</div>
+        <div><strong>State:</strong> ${config.state}</div>
+        <div><strong>Position:</strong> ${config.position}</div>
+        <div><strong>Reading:</strong> ${currentChar}</div>
+        <div style="margin-top: 6px;"><strong>Path:</strong> ${config.path}</div>
+        ${config.accepted ? '<div style="color: #27ae60; font-weight: bold; margin-top: 6px;">✓ ACCEPTED</div>' : ''}
+        ${config.rejected ? '<div style="color: #e74c3c; font-weight: bold; margin-top: 6px;">✗ REJECTED</div>' : ''}
+    `;
+    
+    tooltip.style.display = 'block';
+    
+    // Get mouse position relative to viewport
+    const rect = ntmTreeState.canvas.getBoundingClientRect();
+    const canvasMouseX = hoveredNode.x * (rect.width / ntmTreeState.canvas.width);
+    const canvasMouseY = hoveredNode.y * (rect.height / ntmTreeState.canvas.height);
+    
+    // Calculate tooltip position
+    let tooltipX = rect.left + canvasMouseX;
+    let tooltipY = rect.top + canvasMouseY;
+    
+    // Adjust position to keep tooltip on screen
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Horizontal positioning
+    if (tooltipX + tooltipRect.width > viewportWidth - 20) {
+        tooltipX = tooltipX - tooltipRect.width - 20; // Show to the left
+    } else {
+        tooltipX = tooltipX + 20; // Show to the right
+    }
+    
+    // Vertical positioning  
+    if (tooltipY + tooltipRect.height > viewportHeight - 20) {
+        tooltipY = tooltipY - tooltipRect.height - 10; // Show above
+    } else {
+        tooltipY = tooltipY + 10; // Show below
+    }
+    
+    // Ensure tooltip doesn't go off the left edge
+    tooltipX = Math.max(10, tooltipX);
+    tooltipY = Math.max(10, tooltipY);
+    
+    tooltip.style.left = tooltipX + 'px';
+    tooltip.style.top = tooltipY + 'px';
+}
+
+/**
+ * Hide node tooltip
+ */
+function hideNodeTooltip() {
+    const tooltip = document.getElementById('nodeTooltip');
+    if (tooltip) {
+        tooltip.style.display = 'none';
+    }
 }
 
 /**
@@ -583,7 +756,44 @@ function stepNTMTree() {
     ntmTreeState.tree.push(nextLevelConfigs);
     
     drawNTMTree();
+    updateTreeStatus();
     updateNTMTransitions();
+    
+    // Auto-scroll to show the latest level
+    autoScrollToCurrentLevel();
+    
+    // Check if we should disable the step button
+    const activePaths = nextLevelConfigs.filter(config => !config.accepted && !config.rejected).length;
+    const acceptingPaths = nextLevelConfigs.filter(config => config.accepted).length;
+    
+    if (activePaths === 0 || acceptingPaths > 0 || ntmTreeState.currentLevel >= ntmTreeState.maxLevel - 1) {
+        document.getElementById('ntmStepBtn').disabled = true;
+    }
+}
+
+/**
+ * Auto-scroll the canvas container to show the current level
+ */
+function autoScrollToCurrentLevel() {
+    const canvas = ntmTreeState.canvas;
+    if (!canvas) return;
+    
+    const container = canvas.parentElement;
+    if (!container) return;
+    
+    const levelHeight = 80;
+    const startY = 50;
+    const currentLevelY = startY + ntmTreeState.currentLevel * levelHeight;
+    
+    // Calculate scroll position to center the current level
+    const containerHeight = container.clientHeight;
+    const scrollTop = Math.max(0, currentLevelY - containerHeight / 2);
+    
+    // Smooth scroll to the position
+    container.scrollTo({
+        top: scrollTop,
+        behavior: 'smooth'
+    });
 }
 
 /**
@@ -656,7 +866,7 @@ function generateNTMTransitions(state, char, position) {
                 transitions.push({
                     nextState: 'accept',
                     position: position + 1,
-                    action: 'found 101!',
+                    action: 'accept',
                     accepted: true,
                     rejected: false
                 });
@@ -676,7 +886,7 @@ function generateNTMTransitions(state, char, position) {
 }
 
 /**
- * Draw the NTM computation tree on canvas  
+ * Draw the NTM computation tree on canvas with improved layout
  */
 function drawNTMTree() {
     if (!ntmTreeState.ctx) return;
@@ -684,73 +894,308 @@ function drawNTMTree() {
     const ctx = ntmTreeState.ctx;
     const canvas = ntmTreeState.canvas;
     
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Dynamic canvas height based on tree depth
+    const levelHeight = 80;
+    const nodeRadius = 25;
+    const startY = 50;
+    const margin = 40;
+    const bottomMargin = 80;
     
-    // Set drawing styles
-    ctx.font = '12px monospace';
+    const requiredHeight = startY + (ntmTreeState.currentLevel + 1) * levelHeight + bottomMargin;
+    const minHeight = 400;
+    const newHeight = Math.max(minHeight, requiredHeight);
+    
+    // Resize canvas if needed
+    if (canvas.height !== newHeight) {
+        canvas.height = newHeight;
+        canvas.style.height = newHeight + 'px';
+    }
+    
+    // Clear canvas with subtle background
+    ctx.fillStyle = '#f8f9fa';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Enhanced drawing styles
     ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     
-    const levelHeight = 60;
-    const nodeWidth = 80;
-    const startY = 30;
+    const minNodeSpacing = 60;
     
-    // Draw tree levels
+    // Calculate node positions for better tree layout
+    const nodePositions = calculateNodePositions();
+    
+    // Draw connections first (behind nodes)
+    drawConnections(ctx, nodePositions, startY, levelHeight, nodeRadius);
+    
+    // Draw nodes and labels
     ntmTreeState.tree.forEach((level, levelIndex) => {
         if (levelIndex > ntmTreeState.currentLevel) return;
         
         const y = startY + levelIndex * levelHeight;
-        const nodeSpacing = Math.min(nodeWidth, canvas.width / (level.length + 1));
         
         level.forEach((config, nodeIndex) => {
-            const x = (nodeIndex + 1) * nodeSpacing;
+            const x = nodePositions[levelIndex][nodeIndex];
             
-            // Choose color based on state
-            let color = '#3498db'; // Default blue
-            if (config.accepted) color = '#27ae60'; // Green for accept
-            else if (config.rejected) color = '#e74c3c'; // Red for reject
-            else if (config.state === 'q1') color = '#f39c12'; // Orange for q1
-            else if (config.state === 'q2') color = '#9b59b6'; // Purple for q2
+            // Draw node with enhanced styling
+            drawEnhancedNode(ctx, x, y, config, nodeRadius);
             
-            // Draw node
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.arc(x, y, 20, 0, 2 * Math.PI);
-            ctx.fill();
-            
-            // Draw state label
-            ctx.fillStyle = 'white';
-            ctx.fillText(config.state, x, y + 4);
-            
-            // Draw position info below node
-            ctx.fillStyle = 'black';
-            ctx.font = '10px monospace';
-            ctx.fillText(`pos:${config.position}`, x, y + 35);
-            ctx.font = '12px monospace';
-            
-            // Draw connections to parent (if not first level)
-            if (levelIndex > 0) {
-                const parentLevel = ntmTreeState.tree[levelIndex - 1];
-                const parentY = startY + (levelIndex - 1) * levelHeight;
-                
-                // Simple connection to previous level (approximate)
-                const parentX = nodeSpacing * Math.floor(nodeIndex / 2 + 1);
-                
-                ctx.strokeStyle = '#bdc3c7';
-                ctx.beginPath();
-                ctx.moveTo(parentX, parentY + 20);
-                ctx.lineTo(x, y - 20);
-                ctx.stroke();
+            // Draw transition labels on edges
+            if (levelIndex > 0 && config.path) {
+                drawTransitionLabel(ctx, config, nodePositions, levelIndex, nodeIndex, startY, levelHeight);
             }
         });
     });
     
-    // Draw level labels
-    ctx.fillStyle = 'black';
+    // Draw enhanced header with input visualization
+    drawTreeHeader(ctx, canvas);
+    
+    // Draw level indicator and legend
+    drawTreeLegend(ctx, canvas);
+}
+
+/**
+ * Calculate optimal node positions for tree layout
+ */
+function calculateNodePositions() {
+    const positions = [];
+    const margin = 40;
+    const canvas = ntmTreeState.canvas;
+    
+    ntmTreeState.tree.forEach((level, levelIndex) => {
+        if (levelIndex > ntmTreeState.currentLevel) return;
+        
+        const levelPositions = [];
+        const availableWidth = canvas.width - 2 * margin;
+        
+        if (level.length === 1) {
+            // Center single nodes
+            levelPositions.push(canvas.width / 2);
+        } else {
+            // Distribute nodes evenly with minimum spacing
+            const spacing = Math.max(60, availableWidth / (level.length + 1));
+            
+            level.forEach((_, nodeIndex) => {
+                const x = margin + (nodeIndex + 1) * spacing;
+                levelPositions.push(Math.min(x, canvas.width - margin));
+            });
+        }
+        
+        positions.push(levelPositions);
+    });
+    
+    return positions;
+}
+
+/**
+ * Draw connections between nodes with curved lines
+ */
+function drawConnections(ctx, positions, startY, levelHeight, nodeRadius) {
+    for (let levelIndex = 1; levelIndex <= ntmTreeState.currentLevel; levelIndex++) {
+        const currentLevel = ntmTreeState.tree[levelIndex];
+        const parentLevel = ntmTreeState.tree[levelIndex - 1];
+        
+        if (!currentLevel || !parentLevel) continue;
+        
+        const parentY = startY + (levelIndex - 1) * levelHeight;
+        const currentY = startY + levelIndex * levelHeight;
+        
+        currentLevel.forEach((config, nodeIndex) => {
+            // Find parent node (simplified - assumes binary branching)
+            const parentIndex = Math.floor(nodeIndex / 2);
+            if (parentIndex < parentLevel.length) {
+                const parentX = positions[levelIndex - 1][parentIndex];
+                const currentX = positions[levelIndex][nodeIndex];
+                
+                // Draw curved connection
+                ctx.strokeStyle = config.accepted ? '#27ae60' : 
+                                config.rejected ? '#e74c3c' : '#7f8c8d';
+                ctx.lineWidth = config.accepted || config.rejected ? 3 : 2;
+                
+                ctx.beginPath();
+                ctx.moveTo(parentX, parentY + nodeRadius);
+                
+                // Add curve for visual appeal
+                const controlY = parentY + levelHeight / 2;
+                ctx.quadraticCurveTo(parentX, controlY, currentX, currentY - nodeRadius);
+                ctx.stroke();
+            }
+        });
+    }
+}
+
+/**
+ * Draw enhanced node with better styling
+ */
+function drawEnhancedNode(ctx, x, y, config, radius) {
+    // Choose colors and styles based on state
+    let fillColor = '#3498db';
+    let strokeColor = '#2980b9';
+    let textColor = 'white';
+    
+    if (config.accepted) {
+        fillColor = '#27ae60';
+        strokeColor = '#229954';
+    } else if (config.rejected) {
+        fillColor = '#e74c3c';
+        strokeColor = '#c0392b';
+    } else if (config.state === 'q1') {
+        fillColor = '#f39c12';
+        strokeColor = '#e67e22';
+    } else if (config.state === 'q2') {
+        fillColor = '#9b59b6';
+        strokeColor = '#8e44ad';
+    }
+    
+    // Draw shadow for depth
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.beginPath();
+    ctx.arc(x + 2, y + 2, radius, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Draw main node
+    ctx.fillStyle = fillColor;
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+    
+    // Draw state label with better typography
+    ctx.fillStyle = textColor;
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText(config.state, x, y - 2);
+    
+    // Draw position info below with better styling
+    ctx.fillStyle = '#2c3e50';
+    ctx.font = '11px Arial';
+    ctx.fillText(`pos:${config.position}`, x, y + radius + 15);
+    
+    // Add accept/reject indicators
+    if (config.accepted) {
+        ctx.fillStyle = '#27ae60';
+        ctx.font = 'bold 10px Arial';
+        ctx.fillText('✓', x + radius - 5, y - radius + 8);
+    } else if (config.rejected) {
+        ctx.fillStyle = '#e74c3c';
+        ctx.font = 'bold 10px Arial';
+        ctx.fillText('✗', x + radius - 5, y - radius + 8);
+    }
+}
+
+/**
+ * Draw transition labels on edges
+ */
+function drawTransitionLabel(ctx, config, positions, levelIndex, nodeIndex, startY, levelHeight) {
+    const parentIndex = Math.floor(nodeIndex / 2);
+    if (parentIndex >= positions[levelIndex - 1].length) return;
+    
+    const parentX = positions[levelIndex - 1][parentIndex];
+    const currentX = positions[levelIndex][nodeIndex];
+    const parentY = startY + (levelIndex - 1) * levelHeight;
+    const currentY = startY + levelIndex * levelHeight;
+    
+    // Position label at midpoint of connection
+    const labelX = (parentX + currentX) / 2;
+    const labelY = (parentY + currentY) / 2;
+    
+    // Extract action from path
+    const pathParts = config.path.split(' → ');
+    const action = pathParts[pathParts.length - 1];
+    
+    // Draw label background
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.strokeStyle = '#bdc3c7';
+    ctx.lineWidth = 1;
+    
+    const labelWidth = ctx.measureText(action).width + 8;
+    ctx.fillRect(labelX - labelWidth/2, labelY - 8, labelWidth, 16);
+    ctx.strokeRect(labelX - labelWidth/2, labelY - 8, labelWidth, 16);
+    
+    // Draw action text
+    ctx.fillStyle = '#2c3e50';
+    ctx.font = '9px Arial';
+    ctx.fillText(action, labelX, labelY);
+}
+
+/**
+ * Draw enhanced header with input visualization
+ */
+function drawTreeHeader(ctx, canvas) {
+    // Header background
+    ctx.fillStyle = 'rgba(52, 73, 94, 0.1)';
+    ctx.fillRect(0, 0, canvas.width, 35);
+    
+    // Input string with character highlighting
+    ctx.fillStyle = '#2c3e50';
+    ctx.font = 'bold 16px Arial';
     ctx.textAlign = 'left';
-    ctx.font = '14px sans-serif';
-    ctx.fillText(`Input: "${ntmTreeState.input}"`, 10, 20);
-    ctx.fillText(`Level: ${ntmTreeState.currentLevel}`, 10, canvas.height - 10);
+    ctx.fillText(`Input: `, 15, 22);
+    
+    // Draw input characters individually with highlighting
+    let charX = 80;
+    for (let i = 0; i < ntmTreeState.input.length; i++) {
+        const char = ntmTreeState.input[i];
+        
+        // Highlight characters that are part of potential patterns
+        if (char === '1' && i < ntmTreeState.input.length - 2 && 
+            ntmTreeState.input.substring(i, i + 3) === '101') {
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(charX - 2, 10, 16, 20);
+            ctx.fillStyle = 'white';
+        } else {
+            ctx.fillStyle = '#2c3e50';
+        }
+        
+        ctx.font = 'bold 16px monospace';
+        ctx.fillText(char, charX, 22);
+        charX += 20;
+    }
+    
+    // Pattern we're looking for
+    ctx.fillStyle = '#7f8c8d';
+    ctx.font = '14px Arial';
+    ctx.textAlign = 'right';
+    ctx.fillText('Looking for pattern: "101"', canvas.width - 15, 22);
+}
+
+/**
+ * Draw legend and level information
+ */
+function drawTreeLegend(ctx, canvas) {
+    const legendY = canvas.height - 30;
+    
+    // Level information
+    ctx.fillStyle = '#2c3e50';
+    ctx.font = '14px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(`Level: ${ntmTreeState.currentLevel}`, 15, legendY + 5);
+    
+    // State legend
+    const legendItems = [
+        { color: '#3498db', label: 'q0 (scan)' },
+        { color: '#f39c12', label: 'q1 (expect 0)' },
+        { color: '#9b59b6', label: 'q2 (expect 1)' },
+        { color: '#27ae60', label: 'accept' },
+        { color: '#e74c3c', label: 'reject' }
+    ];
+    
+    let legendX = 120;
+    legendItems.forEach(item => {
+        // Draw color indicator
+        ctx.fillStyle = item.color;
+        ctx.beginPath();
+        ctx.arc(legendX, legendY, 8, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Draw label
+        ctx.fillStyle = '#2c3e50';
+        ctx.font = '11px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.label, legendX + 12, legendY + 3);
+        
+        legendX += ctx.measureText(item.label).width + 35;
+    });
 }
 
 /**
@@ -791,6 +1236,11 @@ function resetNTMTree() {
     const explanationDiv = document.getElementById('ntmExplanation');
     if (explanationDiv) {
         explanationDiv.style.display = 'none';
+    }
+    
+    const statusDiv = document.getElementById('ntmTreeStatus');
+    if (statusDiv) {
+        statusDiv.style.display = 'none';
     }
     
     const stepBtn = document.getElementById('ntmStepBtn');
@@ -1441,6 +1891,11 @@ window.showMultiTapeSolution = showMultiTapeSolution;
 window.showMasterStrategy = showMasterStrategy;
 window.showNTMEquivalenceAnswer = showNTMEquivalenceAnswer;
 window.startLesson2Exam = startLesson2Exam;
+// Make functions globally accessible
+window.buildNTMTree = buildNTMTree;
+window.stepNTMTree = stepNTMTree;
+window.resetNTMTree = resetNTMTree;
+window.validateBinaryInput = validateBinaryInput;
 window.stopLesson2Exam = stopLesson2Exam;
 window.submitLesson2Exam = submitLesson2Exam;
 
